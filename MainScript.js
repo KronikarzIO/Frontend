@@ -51,6 +51,77 @@ class Rectangle extends Drawable {
     }
 }
 
+class RectangleRounded extends Drawable {
+    constructor(x, y, width, height, radious) {
+        super()
+        this.x = x
+        this.y = y
+        this.width = width
+        this.height = height
+        this.radious = radious
+    }
+
+    Draw() {
+        var x = this.x
+        var y = this.y
+        var width = this.width - this.radious*2
+        var height = this.height - this.radious*2
+        var radious = this.radious
+
+        this.context.fillStyle = "antiquewhite"
+        this.context.beginPath()
+        this.context.moveTo(x+radious, y)
+        this.context.lineTo(x+radious+width, y)
+        this.context.arcTo(x+radious+width+radious, y, x+radious+width+radious, y+radious, radious)
+        this.context.lineTo(x+radious+width+radious, y+radious+height)
+        this.context.arcTo(x+radious+width+radious, y+radious+height+radious, x+radious+width, y+radious+height+radious, radious)
+        this.context.lineTo(x+radious, y+radious+height+radious)
+        this.context.arcTo(x, y+radious+height+radious, x, y+radious+height, radious)
+        this.context.lineTo(x, y+radious)
+        this.context.arcTo(x, y, x+radious, y, radious)
+        this.context.fill()
+    }
+}
+
+class PersonBlock extends RectangleRounded {
+    constructor(x, y, imagePath, firstName, lastName) {
+        super(x, y, 350, 150, 15)
+        this.imagePath = imagePath
+        this.firstName = firstName
+        this.lastName = lastName
+    }
+
+    Draw() {
+        var x = this.x
+        var y = this.y
+        var width = this.width - this.radious*2
+        var height = this.height - this.radious*2
+        var radious = this.radious
+
+        this.context.fillStyle = "antiquewhite"
+        this.context.beginPath()
+        this.context.moveTo(x+radious, y)
+        this.context.lineTo(x+radious+width, y)
+        this.context.arcTo(x+radious+width+radious, y, x+radious+width+radious, y+radious, radious)
+        this.context.lineTo(x+radious+width+radious, y+radious+height)
+        this.context.arcTo(x+radious+width+radious, y+radious+height+radious, x+radious+width, y+radious+height+radious, radious)
+        this.context.lineTo(x+radious, y+radious+height+radious)
+        this.context.arcTo(x, y+radious+height+radious, x, y+radious+height, radious)
+        this.context.lineTo(x, y+radious)
+        this.context.arcTo(x, y, x+radious, y, radious)
+        this.context.fill()
+
+        var img = new Image
+        img.src = this.imagePath
+        this.context.drawImage(img, x+10, y+10)
+
+        this.context.fillStyle = "black"
+        this.context.font = "30px Arial"
+        this.context.fillText(this.firstName, x+150, y+65)
+        this.context.fillText(this.lastName,  x+150, y+105)
+    }
+}
+
 class Circle extends Drawable {
     constructor(x, y, r, start, end ) {
         super()
@@ -306,7 +377,7 @@ window.onload = function() {
     canvas.width = document.body.clientWidth - canvas.offsetWidth
     canvas.height = document.body.clientHeight - canvas.offsetHeight
 
-    drawableElements.push(new Rectangle(0, 0, 150, 75))
+    drawableElements.push(new PersonBlock(0, 0, "Default-Avatar.png", "Mike", "Wazowski"))
     drawableElements.push(new Rectangle(1000, 1000, 150, 75))
     
     UpdateCanvas()
