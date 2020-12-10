@@ -16,6 +16,9 @@ var drawableElements = []
 var dragedElement
 var scale = 1
 var scaleCount = 0
+var person = new Map()
+var partner = []
+var toConnect = []
 
 /**************************************************************************************************************/
 
@@ -28,18 +31,19 @@ var scaleCount = 0
 class Drawable {
     static context = null
 
-    constructor() {
+    constructor(id) {
         if(this.context == null) {
             this.context = document.getElementById("canvas").getContext("2d")
         }
+        this.id = id
     }
 
     Draw(){}
 }
 
 class Rectangle extends Drawable {
-    constructor(x, y, width, height) {
-        super()
+    constructor(id, x, y, width, height) {
+        super(id)
         this.x = x
         this.y = y
         this.width = width
@@ -52,8 +56,8 @@ class Rectangle extends Drawable {
 }
 
 class RectangleRounded extends Drawable {
-    constructor(x, y, width, height, radious) {
-        super()
+    constructor(id, x, y, width, height, radious) {
+        super(id)
         this.x = x
         this.y = y
         this.width = width
@@ -84,8 +88,8 @@ class RectangleRounded extends Drawable {
 }
 
 class PersonBlock extends RectangleRounded {
-    constructor(x, y, imagePath, firstName, lastName) {
-        super(x, y, 350, 150, 15)
+    constructor(id, x, y, imagePath, firstName, lastName) {
+        super(id, x, y, 350, 150, 15)
         this.imagePath = imagePath
         this.firstName = firstName
         this.lastName = lastName
@@ -123,8 +127,8 @@ class PersonBlock extends RectangleRounded {
 }
 
 class Circle extends Drawable {
-    constructor(x, y, r, start, end ) {
-        super()
+    constructor(id, x, y, r, start, end ) {
+        super(id)
         this.x = x
         this.y = y
         this.r = r
@@ -154,7 +158,7 @@ class Circle extends Drawable {
 function MouseDown(event) {
     var mouse = GetMousePosition(event)
 
-    if(IsMouseOnRectangle(event)) {
+    if(IsMouseOnRectangle(event) && IsMenuOff()) {
         drawableElements.forEach(element => {
             if(RectanglePointCollision(element, mouse.x, mouse.y)) {
                 document.body.addEventListener("mousemove", DragElement)
@@ -207,6 +211,57 @@ function Wheel(event) {
     UpdateCanvas()
 }
 
+function HideMenu(event) {
+    var menu = document.querySelector("#menu")
+        menu.style.left = "-100%"
+        menu.style.top = "-100%"
+
+    menu.removeEventListener("mouseleave", HideMenu)
+}
+
+function ShowMenu(event) {
+    var menu = document.querySelector("#menu")
+    menu.style.left = `${event.clientX - offsetWidth/2}px`
+    menu.style.top = `${event.clientY - offsetHeight/2}px`
+}
+
+function AddNewConnection(type) {
+    switch(type){
+        case "parent":
+            if(!person.has(toConnect[1].id)) {
+                person.set(toConnect[1].id, [toConnect[0].id])
+            }
+            else {
+                var tmp = person.get(toConnect[1].id)[0]
+                person.set(toConnect[1].id, [tmp, toConnect[0].id])
+            }
+        break;
+
+        case "child":
+            if(!person.has(toConnect[0].id)) {
+                person.set(toConnect[0].id, [toConnect[1].id])
+            }
+            else {
+                var tmp = person.get(toConnect[0].id)[0]
+                person.set(toConnect[0].id, [tmp, toConnect[1].id])
+            }
+        break;
+
+        case "partner":
+
+        break;
+    }
+    toConnect = []
+    HideMenu()
+}
+
+function IsMenuOff() {
+    var menu = document.querySelector("#menu")
+    if(menu.style.left == "-100%") {
+        return true
+    }
+    return false
+}
 ///////////////////////////////
 //          CANVAS           //
 ///////////////////////////////
@@ -218,10 +273,20 @@ function UpdateCanvas() {
     context.save()
     context.scale(scale, scale)
 
-    ChildConnection(drawableElements[0],drawableElements[1])
+    DrawConnections()
 
     drawableElements.forEach(element => {
         element.Draw()
+    });
+}
+
+function DrawConnections() {
+    person.forEach( (parentsId, childId) => {
+        var child = drawableElements.find( element => element.id == childId)
+        for(var i = 0; i < parentsId.length; i++) {
+            var parent = drawableElements.find( e => e.id == parentsId[i])
+            ChildConnection(parent, child)
+        }
     });
 }
 
@@ -235,12 +300,12 @@ function OnResize() {
     UpdateCanvas()
 }
 
-function ChildConnection(rect1, rect2) {
-    var StartX = rect1.x+rect1.width/2
-    var StartY = rect1.y+rect1.height/2
+function ChildConnection(parent, child) {
+    var StartX = parent.x+parent.width/2
+    var StartY = parent.y+parent.height/2
 
-    var EndX = rect2.x+rect2.width/2
-    var EndY = rect2.y+rect2.height/2
+    var EndX = child.x+child.width/2
+    var EndY = child.y+child.height/2
 
     var lineX = StartX
     var lineY = StartY
@@ -249,18 +314,18 @@ function ChildConnection(rect1, rect2) {
     context.moveTo(StartX, StartY)
 
     if(EndX > StartX) {
-        lineX += rect1.width/2+20
+        lineX += parent.width/2+20
     }
     else {
-        lineX += -rect1.width/2-20
+        lineX += -parent.width/2-20
     }
     context.lineTo(lineX, lineY)
 
     if(EndY > StartY) {
-        lineY += (EndY - StartY) - rect2.height/2 - 20
+        lineY += (EndY - StartY) - child.height/2 - 20
     }
     else {
-        lineY += (EndY - StartY) + rect2.height/2 + 20
+        lineY += (EndY - StartY) + child.height/2 + 20
     }
     context.lineTo(lineX, lineY)
 
@@ -315,7 +380,22 @@ function OnMouseUp(event) {
     document.body.removeEventListener("mousemove", DragElement)
     document.body.removeEventListener("mousemove", DragAllElements)
     document.body.removeEventListener("mouseup", OnMouseUp)
-    dragedElement = null
+
+    if(dragedElement != null) {
+        var rectangles = RectanglesUnderMouse(event)
+        if(rectangles.length > 1) {
+            toConnect.push(dragedElement)
+            for(var i = 0; i < rectangles.length; i++) {
+                if(rectangles[i].id != dragedElement.id) {
+                    toConnect.push(rectangles[i])
+                }
+            }
+            ShowMenu(event)
+            menu.addEventListener("mouseleave", HideMenu)
+        }
+
+        dragedElement = null
+    }
 }
 
 ////////////////////////////////////
@@ -365,6 +445,19 @@ function IsMouseOnRectangle(event) {
     return false
 }
 
+function RectanglesUnderMouse(event) {
+    var mouse = GetMousePosition(event)
+    var rec = []
+
+    for(var i = 0; i < drawableElements.length; i++) {
+        if(RectanglePointCollision(drawableElements[i], mouse.x, mouse.y)) {
+            rec.push(drawableElements[i])
+        }
+    }
+
+    return rec
+}
+
 /**************************************************************************************************************/
 
 ///////////////////////////////////////
@@ -377,8 +470,13 @@ window.onload = function() {
     canvas.width = document.body.clientWidth - canvas.offsetWidth
     canvas.height = document.body.clientHeight - canvas.offsetHeight
 
-    drawableElements.push(new PersonBlock(0, 0, "Default-Avatar.png", "Mike", "Wazowski"))
-    drawableElements.push(new Rectangle(1000, 1000, 150, 75))
+    drawableElements.push(new PersonBlock(0, 0, 0, "Default-Avatar.png", "Mike", "Wazowski"))
+    drawableElements.push(new PersonBlock(1, 0, 400, "Default-Avatar.png", "Mike", "Wazowski"))
+    drawableElements.push(new PersonBlock(2, 0, 800, "Default-Avatar.png", "Mike", "Wazowski"))
+    drawableElements.push(new PersonBlock(3, 0, 1200, "Default-Avatar.png", "Mike", "Wazowski"))
+
+    // person.set(0, [1, 2])
+    // person.set(3, [1, 2])
     
     UpdateCanvas()
 
