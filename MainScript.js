@@ -248,7 +248,7 @@ function AddNewConnection(type) {
         break;
 
         case "partner":
-
+            partner.push([toConnect[0], toConnect[1]])
         break;
     }
     toConnect = []
@@ -288,6 +288,12 @@ function DrawConnections() {
             ChildConnection(parent, child)
         }
     });
+
+    for(var i=0; i<partner.length; i++) {
+        var p1 = drawableElements.find( e => e.id == partner[i][0].id)
+        var p2 = drawableElements.find( e => e.id == partner[i][1].id)
+        ParentConnection(p1, p2)
+    }
 }
 
 function OnResize() {
@@ -301,41 +307,78 @@ function OnResize() {
 }
 
 function ChildConnection(parent, child) {
-    var StartX = parent.x+parent.width/2
-    var StartY = parent.y+parent.height/2
-
+    var StartX1 = parent.x+parent.width/2
+    var StartY1 = parent.y+parent.height/2
+    var StartX2
+    var StartY2
     var EndX = child.x+child.width/2
     var EndY = child.y+child.height/2
+    
 
-    var lineX = StartX
-    var lineY = StartY
+    var partners = partner.find( e => e[0].id == parent.id || e[1].id == parent.id)
+    if(partners != null) {
+        if(partners[0].id != parent.id) {
+            StartX2 = partners[0].x+partners[0].width/2
+            StartY2 = partners[0].y+partners[0].height/2
+        }
+        else {
+            StartX2 = partners[1].x+partners[1].width/2
+            StartY2 = partners[1].y+partners[1].height/2
+        }
 
-    context.beginPath()
-    context.moveTo(StartX, StartY)
+        var lineX = StartX2+((StartX1-StartX2)/2)
+        var lineY = StartY1
 
-    if(EndX > StartX) {
-        lineX += parent.width/2+20
+        context.beginPath()
+        context.moveTo(lineX, lineY)
+
+        if(EndY > StartY1) {
+            lineY += (EndY - StartY1) - child.height/2 - 20
+        }
+        else {
+            lineY += (EndY - StartY1) + child.height/2 + 20
+        }
+        context.lineTo(lineX, lineY)
+
+        lineX += EndX - lineX
+        context.lineTo(lineX, lineY)
+
+        lineY += EndY - lineY
+        context.lineTo(lineX, lineY)
+
+        context.stroke()
     }
     else {
-        lineX += -parent.width/2-20
+        var lineX = StartX1
+        var lineY = StartY1
+
+        context.beginPath()
+        context.moveTo(lineX, lineY)
+
+        if(EndX > StartX1) {
+            lineX += parent.width/2+20
+        }
+        else {
+            lineX += -parent.width/2-20
+        }
+        context.lineTo(lineX, lineY)
+
+        if(EndY > StartY1) {
+            lineY += (EndY - StartY1) - child.height/2 - 20
+        }
+        else {
+            lineY += (EndY - StartY1) + child.height/2 + 20
+        }
+        context.lineTo(lineX, lineY)
+
+        lineX += EndX - lineX
+        context.lineTo(lineX, lineY)
+
+        lineY += EndY - lineY
+        context.lineTo(lineX, lineY)
+
+        context.stroke()
     }
-    context.lineTo(lineX, lineY)
-
-    if(EndY > StartY) {
-        lineY += (EndY - StartY) - child.height/2 - 20
-    }
-    else {
-        lineY += (EndY - StartY) + child.height/2 + 20
-    }
-    context.lineTo(lineX, lineY)
-
-    lineX += EndX - lineX
-    context.lineTo(lineX, lineY)
-
-    lineY += EndY - lineY
-    context.lineTo(lineX, lineY)
-
-    context.stroke()
 }
 
 function ParentConnection(rect1, rect2) {
