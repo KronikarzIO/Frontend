@@ -16,7 +16,6 @@ var drawableElements = []
 var dragedElement
 var scale = 1
 var scaleCount = 0
-var person = new Map()
 var partner = []
 var toConnect = []
 
@@ -88,11 +87,13 @@ class RectangleRounded extends Drawable {
 }
 
 class PersonBlock extends RectangleRounded {
-    constructor(id, x, y, imagePath, firstName, lastName) {
+    constructor(id, x, y, imagePath, firstName, lastName, parent1 = null, parent2 = null) {
         super(id, x, y, 350, 150, 15)
         this.imagePath = imagePath
         this.firstName = firstName
         this.lastName = lastName
+        this.parent1Id = parent1
+        this.parent2Id = parent2
     }
 
     Draw() {
@@ -228,22 +229,20 @@ function ShowMenu(event) {
 function AddNewConnection(type) {
     switch(type){
         case "parent":
-            if(!person.has(toConnect[1].id)) {
-                person.set(toConnect[1].id, [toConnect[0].id])
+            if(toConnect[1].parent1Id == null) {
+                toConnect[1].parent1Id = toConnect[0].id
             }
             else {
-                var tmp = person.get(toConnect[1].id)[0]
-                person.set(toConnect[1].id, [tmp, toConnect[0].id])
+                toConnect[1].parent2Id = toConnect[0].id
             }
         break;
 
         case "child":
-            if(!person.has(toConnect[0].id)) {
-                person.set(toConnect[0].id, [toConnect[1].id])
+            if(toConnect[0].parent1Id == null) {
+                toConnect[0].parent1Id = toConnect[1].id
             }
             else {
-                var tmp = person.get(toConnect[0].id)[0]
-                person.set(toConnect[0].id, [tmp, toConnect[1].id])
+                toConnect[0].parent2Id = toConnect[1].id
             }
         break;
 
@@ -251,6 +250,7 @@ function AddNewConnection(type) {
             partner.push([toConnect[0], toConnect[1]])
         break;
     }
+
     toConnect = []
     HideMenu()
 }
@@ -281,11 +281,15 @@ function UpdateCanvas() {
 }
 
 function DrawConnections() {
-    person.forEach( (parentsId, childId) => {
-        var child = drawableElements.find( element => element.id == childId)
-        for(var i = 0; i < parentsId.length; i++) {
-            var parent = drawableElements.find( e => e.id == parentsId[i])
-            ChildConnection(parent, child)
+    drawableElements.forEach( e => {
+        var parent1 = drawableElements.find(element => element.id == e.parent1Id)
+        var parent2 = drawableElements.find(element => element.id == e.parent2Id)
+
+        if(parent1 != undefined) {
+            ChildConnection(parent1, e)
+        }
+        if(parent2 != undefined) {
+            ChildConnection(parent2, e)
         }
     });
 
