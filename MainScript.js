@@ -16,7 +16,6 @@ var drawableElements = []
 var dragedElement
 var scale = 1
 var scaleCount = 0
-var partner = []
 var toConnect = []
 
 /**************************************************************************************************************/
@@ -87,13 +86,14 @@ class RectangleRounded extends Drawable {
 }
 
 class PersonBlock extends RectangleRounded {
-    constructor(id, x, y, imagePath, firstName, lastName, parent1 = null, parent2 = null) {
+    constructor(id, x, y, imagePath, firstName, lastName, parent1 = null, parent2 = null, partnersId = []) {
         super(id, x, y, 350, 150, 15)
         this.imagePath = imagePath
         this.firstName = firstName
         this.lastName = lastName
         this.parent1Id = parent1
         this.parent2Id = parent2
+        this.partnersId = partnersId
     }
 
     Draw() {
@@ -247,7 +247,8 @@ function AddNewConnection(type) {
         break;
 
         case "partner":
-            partner.push([toConnect[0], toConnect[1]])
+            toConnect[0].partnersId.push(toConnect[1].id)
+            toConnect[1].partnersId.push(toConnect[0].id)
         break;
     }
 
@@ -285,19 +286,21 @@ function DrawConnections() {
         var parent1 = drawableElements.find(element => element.id == e.parent1Id)
         var parent2 = drawableElements.find(element => element.id == e.parent2Id)
 
-        if(parent1 != undefined) {
-            ChildConnection(parent1, e)
+        if(parent1 != undefined && parent2 != undefined) {
+            ChildConnection(e, parent1, parent2)
         }
-        if(parent2 != undefined) {
-            ChildConnection(parent2, e)
+        else if(parent1 != undefined) {
+            ChildConnection(e, parent1)
         }
-    });
+        else if (parent2 != undefined) {
+            ChildConnection(e, parent2)
+        }
 
-    for(var i=0; i<partner.length; i++) {
-        var p1 = drawableElements.find( e => e.id == partner[i][0].id)
-        var p2 = drawableElements.find( e => e.id == partner[i][1].id)
-        ParentConnection(p1, p2)
-    }
+        e.partnersId.forEach( partnerId => {
+            var p = drawableElements.find( el => el.id == partnerId)
+            ParentConnection(e, p)
+        });
+    });
 }
 
 function OnResize() {
@@ -310,24 +313,18 @@ function OnResize() {
     UpdateCanvas()
 }
 
-function ChildConnection(parent, child) {
-    var StartX1 = parent.x+parent.width/2
-    var StartY1 = parent.y+parent.height/2
+function ChildConnection(child, parent1, parent2 = null) {
+    var StartX1 = parent1.x+parent1.width/2
+    var StartY1 = parent1.y+parent1.height/2
     var StartX2
     var StartY2
     var EndX = child.x+child.width/2
     var EndY = child.y+child.height/2
     
-
-    var partners = partner.find( e => e[0].id == parent.id || e[1].id == parent.id)
-    if(partners != null) {
-        if(partners[0].id != parent.id) {
-            StartX2 = partners[0].x+partners[0].width/2
-            StartY2 = partners[0].y+partners[0].height/2
-        }
-        else {
-            StartX2 = partners[1].x+partners[1].width/2
-            StartY2 = partners[1].y+partners[1].height/2
+    if(parent2 != null) {
+        if(parent2 != null) {
+            StartX2 = parent2.x+parent2.width/2
+            StartY2 = parent2.y+parent2.height/2
         }
 
         var lineX = StartX2+((StartX1-StartX2)/2)
@@ -360,10 +357,10 @@ function ChildConnection(parent, child) {
         context.moveTo(lineX, lineY)
 
         if(EndX > StartX1) {
-            lineX += parent.width/2+20
+            lineX += parent1.width/2+20
         }
         else {
-            lineX += -parent.width/2-20
+            lineX += -parent1.width/2-20
         }
         context.lineTo(lineX, lineY)
 
