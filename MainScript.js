@@ -17,6 +17,9 @@ var dragedElement
 var scale = 1
 var scaleCount = 0
 var toConnect = []
+var snapToGrid = true
+var viewportX = 0
+var viewportY = 0
 
 /**************************************************************************************************************/
 
@@ -56,11 +59,13 @@ class Rectangle extends Drawable {
 class RectangleRounded extends Drawable {
     constructor(id, x, y, width, height, radious) {
         super(id)
-        this.x = x
-        this.y = y
+        this.x = x + viewportX
+        this.y = y + viewportY
         this.width = width
         this.height = height
         this.radious = radious
+        this.viewportX = viewportX
+        this.viewportY = viewportY
     }
 
     Draw() {
@@ -97,8 +102,8 @@ class PersonBlock extends RectangleRounded {
     }
 
     Draw() {
-        var x = this.x
-        var y = this.y
+        var x = this.x + this.viewportX
+        var y = this.y + this.viewportY
         var width = this.width - this.radious*2
         var height = this.height - this.radious*2
         var radious = this.radious
@@ -204,9 +209,12 @@ function Wheel(event) {
 
     mouseEnd = GetMousePosition(event)
 
+    viewportX += mouseEnd.x - mouseStart.x
+    viewportY += mouseEnd.y - mouseStart.y
+
     drawableElements.forEach(element => {
-        element.x += mouseEnd.x - mouseStart.x
-        element.y += mouseEnd.y - mouseStart.y
+        element.viewportX = viewportX
+        element.viewportY = viewportY
     });
 
     UpdateCanvas()
@@ -314,17 +322,17 @@ function OnResize() {
 }
 
 function ChildConnection(child, parent1, parent2 = null) {
-    var StartX1 = parent1.x+parent1.width/2
-    var StartY1 = parent1.y+parent1.height/2
+    var StartX1 = parent1.x+parent1.width/2 + parent1.viewportX
+    var StartY1 = parent1.y+parent1.height/2 + parent1.viewportY
     var StartX2
     var StartY2
-    var EndX = child.x+child.width/2
-    var EndY = child.y+child.height/2
+    var EndX = child.x+child.width/2 + child.viewportX
+    var EndY = child.y+child.height/2 + child.viewportY
     
     if(parent2 != null) {
         if(parent2 != null) {
-            StartX2 = parent2.x+parent2.width/2
-            StartY2 = parent2.y+parent2.height/2
+            StartX2 = parent2.x+parent2.width/2 + parent2.viewportX
+            StartY2 = parent2.y+parent2.height/2 + parent2.viewportY
         }
 
         var lineX = StartX2+((StartX1-StartX2)/2)
@@ -383,11 +391,11 @@ function ChildConnection(child, parent1, parent2 = null) {
 }
 
 function ParentConnection(rect1, rect2) {
-    var StartX = rect1.x+rect1.width/2
-    var StartY = rect1.y+rect1.height/2
+    var StartX = rect1.x+rect1.width/2 + rect1.viewportX
+    var StartY = rect1.y+rect1.height/2 + rect1.viewportY
 
-    var EndX = rect2.x+rect2.width/2
-    var EndY = rect2.y+rect2.height/2
+    var EndX = rect2.x+rect2.width/2 + rect2.viewportX
+    var EndY = rect2.y+rect2.height/2 + rect2.viewportY
 
     var lineX = StartX
     var lineY = StartY
@@ -449,10 +457,14 @@ function OnMouseUp(event) {
 function DragAllElements(event) {
     var mouse = GetMousePosition(event)
 
+    viewportX += mouse.x - initialPositionX
+    viewportY += mouse.y - initialPositionY
+
     drawableElements.forEach(element => {
-        element.x += mouse.x - initialPositionX
-        element.y += mouse.y - initialPositionY
+        element.viewportX = viewportX
+        element.viewportY = viewportY
     });
+
     initialPositionX = mouse.x
     initialPositionY = mouse.y
     UpdateCanvas()
@@ -461,8 +473,15 @@ function DragAllElements(event) {
 function DragElement(event) {
     var mouse = GetMousePosition(event)
 
-    dragedElement.x = mouse.x + offsetX
-    dragedElement.y = mouse.y + offsetY
+    if(snapToGrid == true) {
+        dragedElement.x = Round(mouse.x + offsetX, 50) 
+        dragedElement.y = Round(mouse.y + offsetY, 50)
+    }
+    else {
+        dragedElement.x = mouse.x + offsetX
+        dragedElement.y = mouse.y + offsetY
+    }
+
     UpdateCanvas()
 }
 
@@ -471,7 +490,10 @@ function DragElement(event) {
 //////////////////////////////////
 
 function RectanglePointCollision(rect, x, y) {
-    if((x >= rect.x) && (x <= rect.x + rect.width) && (y >= rect.y) && (y <= rect.y + rect.height)) {
+    var rectX = rect.x + rect.viewportX
+    var rectY = rect.y + rect.viewportY
+
+    if((x >=rectX) && (x <= rectX + rect.width) && (y >= rectY) && (y <= rectY + rect.height)) {
         return true
     }
     
@@ -500,6 +522,19 @@ function RectanglesUnderMouse(event) {
     }
 
     return rec
+}
+
+///////////////////////////////
+//          OTHERS           //
+///////////////////////////////
+
+function Round(x, factor) {
+    if(x%factor >= factor / 2) {
+        return x - (x%factor) + factor
+    }
+    else {
+        return x - (x%factor)
+    }
 }
 
 /**************************************************************************************************************/
