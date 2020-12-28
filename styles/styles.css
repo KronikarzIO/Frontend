@@ -46,13 +46,11 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 120px;
+    padding: 20px 0;
 }
 
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 40px;
+    padding: 0 20px;
     flex-grow: 1;
 }
 
