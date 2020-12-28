@@ -1,0 +1,47 @@
+.preedit-main-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-grow: 1;
+}
+
+.preedit-main-section .familyreading-image {
+    width: 70vw;
+    margin-left: 2rem;
+    height: auto;
+    max-width: 500px;
+}
+
+.icon-section {
+    display: flex;
+}
+
+.icon {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    margin: .5rem;
+    padding: .75rem;
+    width: 200px;
+    height: 200px;
+    background-color: #3A7420;
+    margin-bottom: 2rem;
+}
+
+.icon img {
+    width: 130px;
+}
+
+@media (max-width: 800px) {
+    .preedit-main-section {
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .preedit-main-section .familyreading-image {
+        margin-top: 2rem;
+        height: 30vh;
+        width: auto;
+    }
+}
