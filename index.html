@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <meta name="author" content="">
+  <meta name="description" content="">
+  <script src="script.js"></script>
+  <link href="style.css" rel="stylesheet">
+</head>
+
+<body onload="onLoad()">
+
+	<div id="banner">
+			<a href="#" id="mnicon" class="mniconclose" onclick="showHideNav()"> 
+				<div></div>
+				<div></div>
+				<div></div>
+			</a>
+			<span id="famForestText">Fam Forest </span>
+			<img src="images/tree.png" alt="Zdjęcie użytkownika" id="treeIcon" >
+	</div>
+
+
+	<div id="leftPanel" class="leftPanelOpen">
+		<div id="userInfoPanel">
+			<img src="images/zdjecie.png" alt="Zdjęcie użytkownika" id="userPhoto" >
+			<div id="userInfo">
+				<span id="nameInfo">Name</span>
+				<br>
+				<span id="surnameInfo">Surname</span>
+				<img src="images/bornIcon.png" alt="" id="bornImage" >
+				<span id="birthDateInfo">09.09.2020</span>
+				<br>
+				<img src="images/graveIcon.png" alt="" id="graveImage" >
+				<span id="deathDateInfo">09.09.2077</span>
+			</div>
+			<img src="images/editIcon.png" alt="" id="editImage" onclick='showEditProfileDiv()' class="btn" >
+			<img src="images/addIcon.png" alt="" id="addImage" class="btn" >
+			<img src="images/moreIcon.png" alt="" id="moreImage" class="btn" >
+			<img src="images/deleteIcon.png" alt="" id="deleteImage" class="btn" >
+		</div>
+		<div id="picturesHeader">
+			<span id="pictureHeaderSpan">Pictures</span>
+		</div>
+		<div id="picturesSection">
+  			<label for="image">
+      			<input type="file" name="image" id="image"  class="addPictures" style="display:none;"/>
+      			<img src="images/addPictureIcon.png" id="addPictureToSection"  />
+   			</label>
+		</div>
+		<div id="factsHeader">
+			<span id="factsHeaderSpan">Facts</span>
+			<span id="addFactsButton" onclick='showDiv("addFactDiv")'>Add facts </span>
+		</div>
+		<div id="addfactsSection">
+		</div>
+
+	</div>
+
+
+	<div id="addFactDiv">
+		<div id="addFactDivheader">
+			<img src="images/cancelIcon.png" id="cancelFactIcon" onclick='showDiv("addFactDiv")' >	
+		</div>
+		<input type="text" id="factDate" placeholder="Date" class="factInput" > <br>
+		<input type="text" id="factTitle" placeholder="Title" class="factInput" > <br>
+		<input type="text" id="factDescription" placeholder="Description" class="factInput" > <br>
+		<img src="images/addIcon.png" id="addFactButton" onclick="addFact()" >
+	</div>
+
+
+	<div id="editProfileDiv" >
+		<div id="editProfileDivheader">
+			<img src="images/cancelIcon.png" id="cancelEditIcon" onclick='showDiv("editProfileDiv")' >
+		</div>
+		<input type="file"  accept="image/*" name="image" id="file"  onchange="loadFile(event)" style="display: none;">
+		<label for="file" style="cursor: pointer;"><img src="" id="editUserPhoto"  /></label>
+		<input type="text" id="editName" placeholder="Name" class="editFactInput" > <br>
+		<input type="text" id="editSurname" placeholder="Surname" class="editFactInput" > <br>
+		<input type="text" id="editBirthDate" placeholder="Day of birth" class="editFactInput" > <br>
+		<input type="text" id="editDeathDay" placeholder="Death day" class="editFactInput" > <br>
+		<img src="images/editIcon.png" alt="" id="editInfo" onclick='editInfo()'>
+
+	</div>
+
+
+	<div id="rightPanel">
+		    <canvas id="canvas" width = "0" height = "0"></canvas>
+    		<script src="CanvasScript.js"></script>
+
+    <ul id="menu" style="left: -100%; top: -100%;">
+        <li class="menu-item" id="parent" onclick="AddNewConnection('parent')">Rodzic</li>
+        <li class="menu-item" id="child" onclick="AddNewConnection('child')">Dziecko</li>
+        <li class="menu-item" id="partner" onclick="AddNewConnection('partner')">Partner</li>
+    </ul>
+
+	</div>
+
+
+</body>
+</html>
+
+
+
