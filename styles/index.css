@@ -14,7 +14,7 @@
 }
 
 .home-main-section .bigtree-image {
-    background-image: url(images/bigtree.png);
+    background-image: url(../images/bigtree.png);
     flex-grow: 1;
     max-height: 70vh;
     min-width: 30vw;
