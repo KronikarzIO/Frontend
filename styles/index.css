@@ -1,26 +1,20 @@
 .home-main-section {
     display: flex;
     align-items: stretch;
-    justify-content: space-between;
+    justify-content: center;
     flex-grow: 1;
-}
-
-.home-main-section .img-wrapper {
-    flex-grow: 1;
-    flex-direction: column;
-    display: flex;
-    align-items: stretch;
-    justify-content: flex-end;
 }
 
 .home-main-section .bigtree-image {
-    background-image: url(images/bigtree.png);
-    flex-grow: 1;
-    max-height: 70vh;
-    min-width: 30vw;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: bottom left;
+    width: 40%;
+}
+
+.bigtree-image img {
+    max-width: 100%;
+    max-height: 80vh;
+    display: block;
+    position: absolute;
+    bottom: 0px;
 }
 
 .home-main-section .call-to-action {
@@ -29,6 +23,7 @@
     align-items: flex-start;
     margin: 1rem;
     align-self: center;
+    width: 50%;
 }
 
 @media (max-width: 900px) {
