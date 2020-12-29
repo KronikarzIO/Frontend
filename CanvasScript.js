@@ -313,7 +313,7 @@ function DrawConnections() {
 
 function OnResize() {
     var width = document.body.clientWidth
-    var height = document.body.clientHeight
+    var height = document.body.clientHeight - 100
         
     canvas.width = width - offsetWidth
     canvas.height = height - offsetHeight
@@ -423,8 +423,8 @@ function ParentConnection(rect1, rect2) {
 
 function GetMousePosition(event) {
     return {
-        x: (event.clientX - offsetWidth/2)/context.getTransform().a,
-        y: (event.clientY - offsetHeight/2)/context.getTransform().d
+        x: (event.clientX - offsetWidth/2 - event.target.getBoundingClientRect().left)/context.getTransform().a,
+        y: (event.clientY - offsetHeight/2 - event.target.getBoundingClientRect().top)/context.getTransform().d
     };
 }
 
@@ -547,7 +547,7 @@ function Round(x, factor) {
 
 window.onload = function() {
     canvas.width = document.body.clientWidth - canvas.offsetWidth
-    canvas.height = document.body.clientHeight - canvas.offsetHeight
+    canvas.height = document.body.clientHeight - canvas.offsetHeight - 100
 
     drawableElements.push(new PersonBlock(0, 0, 0, "Default-Avatar.png", "Mike", "Wazowski"))
     drawableElements.push(new PersonBlock(1, 0, 400, "Default-Avatar.png", "Mike", "Wazowski"))

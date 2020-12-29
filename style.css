@@ -4,7 +4,7 @@ body{
 }
 
 #banner{
-	height:100px;
+	height:8%;
 	background-color:#55973E;
 	width:100%;
 }
@@ -25,13 +25,12 @@ body{
 }
 
 #rightPanel{
-	height:1000px;
-	overflow:hidden; /* wypełnia pozostałą szerokość */
-	background-color: #0074D9;
+	height:92%;
+	background-color: #FFF;
 }
 
 #leftPanel{
-	height:1000px;
+	height:92%;
 	width: 450px;
 	background-color:#E3EB86;
 	float:left;
@@ -345,7 +344,7 @@ body {
     height: 100%;
 }
 
-canvas {
+/* canvas {
     box-sizing: border-box;
 }
 
@@ -353,7 +352,7 @@ canvas {
     border: 10px;
     border-color: red;
     border-style: solid;
-}
+} */
 
 #menu {
     position: absolute;
