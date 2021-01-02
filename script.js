@@ -1,8 +1,4 @@
 
-function onLoad(){
-dragElement(document.getElementById("addFactDiv"));
-dragElement(document.getElementById("editProfileDiv"));	
-}
 
 
 function dragElement(elmnt) {
@@ -65,6 +61,11 @@ window.addEventListener('load', function() {
 		var img = document.createElement("img");
 		img.src = URL.createObjectURL(this.files[0]);
 		img.classList.add('addedPictures');
+		img.setAttribute('draggable', true);
+		img.setAttribute('ondragstart', "drag(event)");
+		img.id = img.src;
+		img.onclick = function(){ galleryView(img); };
+
 		document.getElementById("picturesSection").appendChild(img);
       }
   });
@@ -147,6 +148,16 @@ function showEditProfileDiv(){
 
 
 function editInfo(){
+	if(document.getElementById("editName").value.length > 9)
+		document.getElementById("nameInfo").style.fontSize = "150%" ;
+	else if(document.getElementById("editName").value.length <= 8)
+		document.getElementById("nameInfo").style.fontSize = "230%" ;
+
+	if(document.getElementById("editSurname").value.length > 9)
+		document.getElementById("surnameInfo").style.fontSize = "150%" ;
+	else if(document.getElementById("editSurname").value.length <= 8)
+		document.getElementById("surnameInfo").style.fontSize = "230%" ;
+
 	document.getElementById("userPhoto").src = document.getElementById("editUserPhoto").src;
 	document.getElementById("nameInfo").innerHTML = document.getElementById("editName").value;
 	document.getElementById("surnameInfo").innerHTML = document.getElementById("editSurname").value;
@@ -154,6 +165,37 @@ function editInfo(){
 	document.getElementById("deathDateInfo").innerHTML = document.getElementById("editDeathDay").value;
 }
 
+
+function galleryView(image){
+		lightbox.classList.add('active');
+		const img = document.createElement('img');
+		img.src = image.src
+		while(lightbox.firstChild){
+			lightbox.removeChild(lightbox.firstChild)
+		}
+		lightbox.appendChild(img);
+}
+
+
+
+
+
+function allowDrop(ev) {
+  ev.preventDefault();
+}
+
+function drag(ev) {
+  ev.dataTransfer.setData("text", ev.target.id);
+}
+
+function drop(ev) {
+ 	ev.preventDefault();
+	var data = ev.dataTransfer.getData("text");
+	var el = document.getElementById(data);
+	el.parentNode.removeChild(el);
+
+
+}
 
 
 

@@ -10,7 +10,7 @@
   <link href="style.css" rel="stylesheet">
 </head>
 
-<body onload="onLoad()">
+<body>
 
 	<div id="banner">
 			<a href="#" id="mnicon" class="mniconclose" onclick="showHideNav()"> 
@@ -43,6 +43,7 @@
 		</div>
 		<div id="picturesHeader">
 			<span id="pictureHeaderSpan">Pictures</span>
+			<img src="images/deleteImg.png" alt="" id="deleteImg" ondrop="drop(event)" ondragover="allowDrop(event)">
 		</div>
 		<div id="picturesSection">
   			<label for="image">
@@ -85,6 +86,7 @@
 
 	</div>
 
+	<div id="lightbox"></div>
 
 	<div id="rightPanel">
 		    <canvas id="canvas" width = "0" height = "0"></canvas>

@@ -563,4 +563,14 @@ window.onload = function() {
     document.body.addEventListener("mousedown", MouseDown)
 
     window.onresize = OnResize
+
+
+    dragElement(document.getElementById("addFactDiv"));
+    dragElement(document.getElementById("editProfileDiv")); 
+
+    lightbox.addEventListener('click', e=>{
+        if(e.target !== e.currentTarget) return
+            lightbox.classList.remove('active');
+    })
+
 }
