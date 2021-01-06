@@ -573,4 +573,6 @@ window.onload = function() {
             lightbox.classList.remove('active');
     })
 
+    loadUser();
+
 }
