@@ -6,8 +6,8 @@
   <title></title>
   <meta name="author" content="">
   <meta name="description" content="">
-  <script src="script.js"></script>
-  <link href="style.css" rel="stylesheet">
+  <script src="../scripts/edit-tree.js"></script>
+  <link href="../styles/style.css" rel="stylesheet">
 </head>
 
 <body>
@@ -19,36 +19,36 @@
 				<div></div>
 			</a>
 			<span id="famForestText">Fam Forest </span>
-			<img src="images/tree.png" alt="Zdjęcie użytkownika" id="treeIcon" >
+			<img src="../images/tree.png" alt="Zdjęcie użytkownika" id="tree-icon" >
 	</div>
 
 
 	<div id="leftPanel" class="leftPanelOpen">
 		<div id="userInfoPanel">
-			<img src="images/zdjecie.png" alt="Zdjęcie użytkownika" id="userPhoto" >
+			<img src="../images/random-img-3.png" alt="Zdjęcie użytkownika" id="userPhoto" >
 			<div id="userInfo">
 				<span id="nameInfo">Name</span>
 				<br>
 				<span id="surnameInfo">Surname</span>
-				<img src="images/bornIcon.png" alt="" id="bornImage" >
+				<img src="../images/born-icon.png" alt="" id="bornImage" >
 				<span id="birthDateInfo">09.09.2020</span>
 				<br>
-				<img src="images/graveIcon.png" alt="" id="graveImage" >
+				<img src="../images/died-icon.png" alt="" id="graveImage" >
 				<span id="deathDateInfo">09.09.2077</span>
 			</div>
-			<img src="images/editIcon.png" alt="" id="editImage" onclick='showEditProfileDiv()' class="btn" >
-			<img src="images/addIcon.png" alt="" id="addImage" class="btn" >
-			<img src="images/moreIcon.png" alt="" id="moreImage" class="btn" >
-			<img src="images/deleteIcon.png" alt="" id="deleteImage" class="btn" >
+			<img src="../images/edit-icon.png" alt="" id="editImage" onclick='showEditProfileDiv()' class="btn" >
+			<img src="../images/add-icon.png" alt="" id="addImage" class="btn" >
+			<img src="../images/more-icon.png" alt="" id="moreImage" class="btn" >
+			<img src="../images/delete-icon.png" alt="" id="deleteImage" class="btn" >
 		</div>
 		<div id="picturesHeader">
 			<span id="pictureHeaderSpan">Pictures</span>
-			<img src="images/deleteImg.png" alt="" id="deleteImg" ondrop="drop(event)" ondragover="allowDrop(event)">
+			<img src="../images/bin-icon.png" alt="" id="deleteImg" ondrop="drop(event)" ondragover="allowDrop(event)">
 		</div>
 		<div id="picturesSection">
   			<label for="image">
       			<input type="file" name="image" id="image"  class="addPictures" style="display:none;"/>
-      			<img src="images/addPictureIcon.png" id="addPictureToSection"  />
+      			<img src="../images/add-picture-icon.png" id="addPictureToSection"  />
    			</label>
 		</div>
 		<div id="factsHeader">
@@ -63,18 +63,18 @@
 
 	<div id="addFactDiv">
 		<div id="addFactDivheader">
-			<img src="images/cancelIcon.png" id="cancelFactIcon" onclick='showDiv("addFactDiv")' >	
+			<img src="../images/cancel-icon.png" id="cancelFact-icon" onclick='showDiv("addFactDiv")' >	
 		</div>
 		<input type="text" id="factDate" placeholder="Date" class="factInput" > <br>
 		<input type="text" id="factTitle" placeholder="Title" class="factInput" > <br>
 		<input type="text" id="factDescription" placeholder="Description" class="factInput" > <br>
-		<img src="images/addIcon.png" id="addFactButton" onclick="addFact()" >
+		<img src="../images/add-icon.png" id="addFactButton" onclick="addFact()" >
 	</div>
 
 
 	<div id="editProfileDiv" >
 		<div id="editProfileDivheader">
-			<img src="images/cancelIcon.png" id="cancelEditIcon" onclick='showDiv("editProfileDiv")' >
+			<img src="../images/cancel-icon.png" id="cancelEdit-icon" onclick='showDiv("editProfileDiv")' >
 		</div>
 		<input type="file"  accept="image/*" name="image" id="file"  onchange="loadFile(event)" style="display: none;">
 		<label for="file" style="cursor: pointer;"><img src="" id="editUserPhoto"  /></label>
@@ -82,7 +82,7 @@
 		<input type="text" id="editSurname" placeholder="Surname" class="editFactInput" > <br>
 		<input type="text" id="editBirthDate" placeholder="Day of birth" class="editFactInput" > <br>
 		<input type="text" id="editDeathDay" placeholder="Death day" class="editFactInput" > <br>
-		<img src="images/editIcon.png" alt="" id="editInfo" onclick='editInfo()'>
+		<img src="../images/edit-icon.png" alt="" id="editInfo" onclick='editInfo()'>
 
 	</div>
 
@@ -90,7 +90,7 @@
 
 	<div id="rightPanel">
 		    <canvas id="canvas" width = "0" height = "0"></canvas>
-    		<script src="CanvasScript.js"></script>
+    		<script src="../scripts/canvas-script.js"></script>
 
     <ul id="menu" style="left: -100%; top: -100%;">
         <li class="menu-item" id="parent" onclick="AddNewConnection('parent')">Rodzic</li>

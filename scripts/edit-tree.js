@@ -86,7 +86,7 @@ function addFact(){
 
 	var deleteDiv = document.createElement("img");
 	deleteDiv.classList.add('factDelete');
-	deleteDiv.src = "images/deleteFact.png";
+	deleteDiv.src = "../images/delete-fact.png";
 	deleteDiv.onclick = function(){ deleteFactDiv(div); };
 
 	var factDate = document.createTextNode(document.getElementById("factDate").value);
@@ -251,7 +251,7 @@ function addFactFromFile(){
 
 		let deleteDiv = document.createElement("img");
 		deleteDiv.classList.add('factDelete');
-		deleteDiv.src = "images/deleteFact.png";
+		deleteDiv.src = "../images/delete-fact.png";
 		deleteDiv.onclick = function(){ deleteFactDiv(div); };
 
 
@@ -277,8 +277,8 @@ function createDiv(varName, className){
 }
 
 
-var user = new UserData("Jan", "Kowalski", "08.08.1980", "", "images/zdjecie.png",
-	['images/random1.jpg', 'images/random2.jpg'],
+var user = new UserData("Jan", "Kowalski", "08.08.1980", "", "../images/random-img-3.png",
+	['../images/random-img-1.jpg', '../images/random-img-2.jpg'],
 	[['2020.05.05','Wydarzenie 1','Krótki opis wydarzenia'],['2020.05.06','Wydarzenie 2','Kolejny opis wydarzenia']]);
 
 function UserData(name, surname, birthDay, deathDay, profilePicture, userPictures, userFacts){
