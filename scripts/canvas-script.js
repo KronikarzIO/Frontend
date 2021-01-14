@@ -4,22 +4,9 @@
 //////////////////////////////////////
 //////////////////////////////////////
 
-var canvas = document.getElementById("canvas")
-var context = canvas.getContext("2d")
-var offsetWidth = canvas.offsetWidth
-var offsetHeight = canvas.offsetHeight
-var offsetX
-var offsetY
-var initialPositionX
-var initialPositionY
 var drawableElements = []
-var dragedElement
-var scale = 1
-var scaleCount = 0
-var toConnect = []
+var toConnect = {dragedElement: 0, staticElement: 0}
 var snapToGrid = true
-var viewportX = 0
-var viewportY = 0
 
 /**************************************************************************************************************/
 
@@ -28,6 +15,29 @@ var viewportY = 0
 ////          CLASSES           ////
 ////////////////////////////////////
 ////////////////////////////////////
+
+class Viewport {
+    constructor() {
+        this.x = 0
+        this.y = 0
+        this.zoom = 1
+    }
+
+    GetMousePosition(event) {
+        var contextTransform =  canvas.getContext("2d").getTransform()
+        return {
+            x: event.offsetX / contextTransform.a - this.x,
+            y: event.offsetY / contextTransform.d - this.y
+        }
+    }
+
+    DragViewport(event) {
+        var contextTransform =  canvas.getContext("2d").getTransform()
+        this.x += event.movementX / contextTransform.a
+        this.y += event.movementY / contextTransform.d
+        UpdateCanvas()
+    }
+}
 
 class Drawable {
     static context = null
@@ -59,13 +69,11 @@ class Rectangle extends Drawable {
 class RectangleRounded extends Drawable {
     constructor(id, x, y, width, height, radious) {
         super(id)
-        this.x = x + viewportX
-        this.y = y + viewportY
+        this.x = x + viewport.x
+        this.y = y + viewport.y
         this.width = width
         this.height = height
         this.radious = radious
-        this.viewportX = viewportX
-        this.viewportY = viewportY
     }
 
     Draw() {
@@ -101,9 +109,9 @@ class PersonBlock extends RectangleRounded {
         this.partnersId = partnersId
     }
 
-    Draw() {
-        var x = this.x + this.viewportX
-        var y = this.y + this.viewportY
+    Draw(viewport) {
+        var x = this.x + viewport.x
+        var y = this.y + viewport.y
         var width = this.width - this.radious*2
         var height = this.height - this.radious*2
         var radious = this.radious
@@ -149,6 +157,36 @@ class Circle extends Drawable {
     }
 }
 
+class Dragger {
+    constructor() {
+        this.initialMouse
+        this.initialPosition
+        this.dragedElement
+    }
+
+    Drag(event) {
+        var mouse = viewport.GetMousePosition(event)
+
+        if(snapToGrid == true) {
+            this.dragedElement.x = Round(this.initialPosition.x + mouse.x - this.initialMouse.x , 30)
+            this.dragedElement.y = Round(this.initialPosition.y + mouse.y - this.initialMouse.y , 30)
+        }
+        else {
+            this.dragedElement.x += event.movementX
+            this.dragedElement.y += event.movementY
+        }
+
+        UpdateCanvas()
+    }
+}
+
+class Connector {
+    constructor() {
+        this.dragedElement
+        this.staticElement
+    }
+}
+
 /**************************************************************************************************************/
 
 //////////////////////////////////////
@@ -162,60 +200,39 @@ class Circle extends Drawable {
 ///////////////////////////////
 
 function MouseDown(event) {
-    var mouse = GetMousePosition(event)
+    var mouse = viewport.GetMousePosition(event)
 
     if(IsMouseOnRectangle(event) && IsMenuOff()) {
         drawableElements.forEach(element => {
             if(RectanglePointCollision(element, mouse.x, mouse.y)) {
-                document.body.addEventListener("mousemove", DragElement)
-                document.body.addEventListener("mouseup", OnMouseUp)
-                offsetX = element.x - mouse.x
-                offsetY = element.y - mouse.y
-                dragedElement = element
+                canvas.addEventListener("mousemove", DragElement)
+                canvas.addEventListener("mouseup", OnMouseUp)
+                dragger.initialMouse = {x: mouse.x, y: mouse.y}
+                dragger.initialPosition = {x: element.x, y: element.y}
+                dragger.dragedElement = element
             }
         })
     }
-    else {
-        document.body.addEventListener("mousemove", DragAllElements)
-        document.body.addEventListener("mouseup", OnMouseUp)
-        initialPositionX = mouse.x
-        initialPositionY = mouse.y
-    }
 }
 
-function Wheel(event) {
-    mouseStart = GetMousePosition(event)
+function MouseWheel(event) {
+    var context = canvas.getContext("2d")
+
+    var mouseStart = viewport.GetMousePosition(event)
 
     if(event.deltaY > 0) {
-        scaleCount--
+        context.scale(0.5, 0.5)
+        viewport.zoom *= 0.5
     }
     else {
-        scaleCount++
+        context.scale(2, 2)
+        viewport.zoom *= 2
     }
 
-    if(scaleCount > 0) {
-        scale = Math.pow(1.2 , scaleCount)
-    }
-    else if(scaleCount < 0) {
-        scale = Math.pow(0.8 , -scaleCount)
-    }
-    else {
-        scale = 1
-    }
+    var mouseEnd = viewport.GetMousePosition(event)
 
-    context.restore()
-    context.save()
-    context.scale(scale, scale)
-
-    mouseEnd = GetMousePosition(event)
-
-    viewportX += mouseEnd.x - mouseStart.x
-    viewportY += mouseEnd.y - mouseStart.y
-
-    drawableElements.forEach(element => {
-        element.viewportX = viewportX
-        element.viewportY = viewportY
-    });
+    viewport.x += mouseEnd.x - mouseStart.x
+    viewport.y += mouseEnd.y - mouseStart.y
 
     UpdateCanvas()
 }
@@ -230,37 +247,46 @@ function HideMenu(event) {
 
 function ShowMenu(event) {
     var menu = document.querySelector("#menu")
-    menu.style.left = `${event.clientX - offsetWidth/2}px`
-    menu.style.top = `${event.clientY - offsetHeight/2}px`
+    menu.style.left = `${event.clientX}px`
+    menu.style.top = `${event.clientY}px`
 }
 
 function AddNewConnection(type) {
     switch(type){
         case "parent":
-            if(toConnect[1].parent1Id == null) {
-                toConnect[1].parent1Id = toConnect[0].id
+            if(toConnect.staticElement.parent1Id == null) {
+                toConnect.staticElement.parent1Id = toConnect.dragedElement.id
             }
             else {
-                toConnect[1].parent2Id = toConnect[0].id
+                toConnect.staticElement.parent2Id = toConnect.dragedElement.id
+
+                var tmp = toConnect.staticElement
+                toConnect.staticElement = drawableElements.find(e => e.id == tmp.parent1Id)
+                toConnect.dragedElement = drawableElements.find(e => e.id == tmp.parent2Id)
+                AddNewConnection("partner")
             }
         break;
 
         case "child":
-            if(toConnect[0].parent1Id == null) {
-                toConnect[0].parent1Id = toConnect[1].id
+            if(toConnect.dragedElement.parent1Id == null) {
+                toConnect.dragedElement.parent1Id = toConnect.staticElement.id
             }
             else {
-                toConnect[0].parent2Id = toConnect[1].id
+                toConnect.dragedElement.parent2Id = toConnect.staticElement.id
+
+                var tmp = toConnect.dragedElement
+                toConnect.staticElement = drawableElements.find(e => e.id == tmp.parent1Id)
+                toConnect.dragedElement = drawableElements.find(e => e.id == tmp.parent2Id)
+                AddNewConnection("partner")
             }
         break;
 
         case "partner":
-            toConnect[0].partnersId.push(toConnect[1].id)
-            toConnect[1].partnersId.push(toConnect[0].id)
+            toConnect.dragedElement.partnersId.push(toConnect.staticElement.id)
+            toConnect.staticElement.partnersId.push(toConnect.dragedElement.id)
         break;
     }
 
-    toConnect = []
     HideMenu()
 }
 
@@ -276,16 +302,15 @@ function IsMenuOff() {
 ///////////////////////////////
 
 function UpdateCanvas() {
-    context.restore()
-    context.clearRect(0, 0, canvas.width, canvas.height)
-    
-    context.save()
-    context.scale(scale, scale)
+    var context = canvas.getContext("2d")
+    var contextTransform =  context.getTransform()
+
+    context.clearRect(0, 0, canvas.width/contextTransform.a, canvas.height/contextTransform.d)
 
     DrawConnections()
 
     drawableElements.forEach(element => {
-        element.Draw()
+        element.Draw(viewport)
     });
 }
 
@@ -311,28 +336,19 @@ function DrawConnections() {
     });
 }
 
-function OnResize() {
-    var width = document.body.clientWidth
-    var height = document.body.clientHeight - 100
-        
-    canvas.width = width - offsetWidth
-    canvas.height = height - offsetHeight
-
-    UpdateCanvas()
-}
-
 function ChildConnection(child, parent1, parent2 = null) {
-    var StartX1 = parent1.x+parent1.width/2 + parent1.viewportX
-    var StartY1 = parent1.y+parent1.height/2 + parent1.viewportY
+    var context = canvas.getContext("2d")
+    var StartX1 = parent1.x+parent1.width/2 + viewport.x
+    var StartY1 = parent1.y+parent1.height/2 + viewport.y
     var StartX2
     var StartY2
-    var EndX = child.x+child.width/2 + child.viewportX
-    var EndY = child.y+child.height/2 + child.viewportY
+    var EndX = child.x+child.width/2 + viewport.x
+    var EndY = child.y+child.height/2 + viewport.y
     
     if(parent2 != null) {
         if(parent2 != null) {
-            StartX2 = parent2.x+parent2.width/2 + parent2.viewportX
-            StartY2 = parent2.y+parent2.height/2 + parent2.viewportY
+            StartX2 = parent2.x+parent2.width/2 + viewport.x
+            StartY2 = parent2.y+parent2.height/2 + viewport.y
         }
 
         var lineX = StartX2+((StartX1-StartX2)/2)
@@ -391,11 +407,13 @@ function ChildConnection(child, parent1, parent2 = null) {
 }
 
 function ParentConnection(rect1, rect2) {
-    var StartX = rect1.x+rect1.width/2 + rect1.viewportX
-    var StartY = rect1.y+rect1.height/2 + rect1.viewportY
+    var context = canvas.getContext("2d")
 
-    var EndX = rect2.x+rect2.width/2 + rect2.viewportX
-    var EndY = rect2.y+rect2.height/2 + rect2.viewportY
+    var StartX = rect1.x+rect1.width/2 + viewport.x
+    var StartY = rect1.y+rect1.height/2 + viewport.y
+
+    var EndX = rect2.x+rect2.width/2 + viewport.x
+    var EndY = rect2.y+rect2.height/2 + viewport.y
 
     var lineX = StartX
     var lineY = StartY
@@ -421,32 +439,27 @@ function ParentConnection(rect1, rect2) {
 //          MOUSE           //
 //////////////////////////////
 
-function GetMousePosition(event) {
-    return {
-        x: (event.clientX - offsetWidth/2 - event.target.getBoundingClientRect().left)/context.getTransform().a,
-        y: (event.clientY - offsetHeight/2 - event.target.getBoundingClientRect().top)/context.getTransform().d
-    };
-}
-
 function OnMouseUp(event) {
-    document.body.removeEventListener("mousemove", DragElement)
-    document.body.removeEventListener("mousemove", DragAllElements)
-    document.body.removeEventListener("mouseup", OnMouseUp)
+    canvas.removeEventListener("mousemove", DragElement)
+    canvas.removeEventListener("mouseup", OnMouseUp)
 
-    if(dragedElement != null) {
+    if(dragger.dragedElement != null) {
         var rectangles = RectanglesUnderMouse(event)
+
         if(rectangles.length > 1) {
-            toConnect.push(dragedElement)
+            toConnect.dragedElement = dragger.dragedElement
+
             for(var i = 0; i < rectangles.length; i++) {
-                if(rectangles[i].id != dragedElement.id) {
-                    toConnect.push(rectangles[i])
+                if(rectangles[i].id != dragger.dragedElement.id) {
+                    toConnect.staticElement = rectangles[i]
                 }
             }
+
             ShowMenu(event)
             menu.addEventListener("mouseleave", HideMenu)
         }
 
-        dragedElement = null
+        dragger.dragedElement = null
     }
 }
 
@@ -454,35 +467,18 @@ function OnMouseUp(event) {
 //          INTERACTION           //
 ////////////////////////////////////
 
-function DragAllElements(event) {
-    var mouse = GetMousePosition(event)
-
-    viewportX += mouse.x - initialPositionX
-    viewportY += mouse.y - initialPositionY
-
-    drawableElements.forEach(element => {
-        element.viewportX = viewportX
-        element.viewportY = viewportY
-    });
-
-    initialPositionX = mouse.x
-    initialPositionY = mouse.y
-    UpdateCanvas()
+function DragElement(event) {
+    dragger.Drag(event)
 }
 
-function DragElement(event) {
-    var mouse = GetMousePosition(event)
-
-    if(snapToGrid == true) {
-        dragedElement.x = Round(mouse.x + offsetX, 50) 
-        dragedElement.y = Round(mouse.y + offsetY, 50)
+function MouseMove(event) {
+    switch(event.which) {
+        case 3:
+            viewport.DragViewport(event)            
+            break
+        default:
+            return
     }
-    else {
-        dragedElement.x = mouse.x + offsetX
-        dragedElement.y = mouse.y + offsetY
-    }
-
-    UpdateCanvas()
 }
 
 //////////////////////////////////
@@ -490,8 +486,8 @@ function DragElement(event) {
 //////////////////////////////////
 
 function RectanglePointCollision(rect, x, y) {
-    var rectX = rect.x + rect.viewportX
-    var rectY = rect.y + rect.viewportY
+    var rectX = rect.x
+    var rectY = rect.y
 
     if((x >=rectX) && (x <= rectX + rect.width) && (y >= rectY) && (y <= rectY + rect.height)) {
         return true
@@ -501,7 +497,7 @@ function RectanglePointCollision(rect, x, y) {
 }
 
 function IsMouseOnRectangle(event) {
-    var mouse = GetMousePosition(event)
+    var mouse = viewport.GetMousePosition(event)
 
     for(var i = 0; i < drawableElements.length; i++) {
         if(RectanglePointCollision(drawableElements[i], mouse.x, mouse.y)) {
@@ -512,7 +508,7 @@ function IsMouseOnRectangle(event) {
 }
 
 function RectanglesUnderMouse(event) {
-    var mouse = GetMousePosition(event)
+    var mouse = viewport.GetMousePosition(event)
     var rec = []
 
     for(var i = 0; i < drawableElements.length; i++) {
@@ -545,26 +541,10 @@ function Round(x, factor) {
 ///////////////////////////////////////
 ///////////////////////////////////////
 
+var viewport = new Viewport()
+var dragger = new Dragger()
+
 window.onload = function() {
-    canvas.width = document.body.clientWidth - canvas.offsetWidth
-    canvas.height = document.body.clientHeight - canvas.offsetHeight - 100
-
-    drawableElements.push(new PersonBlock(0, 0, 0, "../images/default-avatar.png", "Mike", "Wazowski"))
-    drawableElements.push(new PersonBlock(1, 0, 400, "../images/default-avatar.png", "Mike", "Wazowski"))
-    drawableElements.push(new PersonBlock(2, 0, 800, "../images/default-avatar.png", "Mike", "Wazowski"))
-    drawableElements.push(new PersonBlock(3, 0, 1200, "../images/default-avatar.png", "Mike", "Wazowski"))
-
-    // person.set(0, [1, 2])
-    // person.set(3, [1, 2])
-    
-    UpdateCanvas()
-
-    document.addEventListener("wheel", Wheel)
-    document.body.addEventListener("mousedown", MouseDown)
-
-    window.onresize = OnResize
-
-
     dragElement(document.getElementById("addFactDiv"));
     dragElement(document.getElementById("editProfileDiv")); 
 
@@ -574,5 +554,30 @@ window.onload = function() {
     })
 
     loadUser();
-
 }
+
+window.addEventListener("load", () => {
+    canvas.width = canvas.clientWidth
+    canvas.height = canvas.clientHeight
+
+    canvas.addEventListener('contextmenu', event => event.preventDefault());
+    canvas.addEventListener("mousemove", MouseMove)
+    canvas.addEventListener("mousedown", MouseDown)
+    canvas.addEventListener("wheel", MouseWheel)
+
+    UpdateCanvas()
+})
+
+window.addEventListener("resize", () => {
+    canvas.width = canvas.clientWidth
+    canvas.height = canvas.clientHeight
+
+    canvas.getContext("2d").scale(viewport.zoom, viewport.zoom)
+
+    UpdateCanvas()
+})
+
+drawableElements.push(new PersonBlock(0, 0, 0, "../images/default-avatar.png", "Mike", "Wazowski"))
+drawableElements.push(new PersonBlock(1, 0, 400, "../images/default-avatar.png", "Mike", "Wazowski"))
+drawableElements.push(new PersonBlock(2, 0, 800, "../images/default-avatar.png", "Mike", "Wazowski"))
+drawableElements.push(new PersonBlock(3, 0, 1200, "../images/default-avatar.png", "Mike", "Wazowski"))
