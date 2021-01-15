@@ -3,6 +3,7 @@
     align-items: center;
     justify-content: space-between;
     flex-grow: 1;
+
 }
 
 .preedit-main-section .familyreading-image {
@@ -12,8 +13,22 @@
     max-width: 500px;
 }
 
+.call-to-action {
+    width: 100%;
+    height: 100%;
+}
+
 .icon-section {
+    width: 100%;
+    height: 100%;
     display: flex;
+    flex-wrap: wrap;
+}
+
+.preedit-main-section a{
+    color: #E3EB86;
+    text-decoration: none;
+    padding: 1rem;
 }
 
 .icon {

@@ -7,10 +7,15 @@
 
 .home-main-section .bigtree-image {
     width: 40%;
+    flex-grow: 1;
+    height: auto;
+    margin-right: 2rem;
+    background-size: contain;
+    background-position: bottom left; 
 }
 
 .bigtree-image img {
-    max-width: 100%;
+    max-width: 40vw;
     max-height: 80vh;
     display: block;
     position: absolute;
@@ -26,13 +31,23 @@
     width: 50%;
 }
 
-@media (max-width: 900px) {
-    .home-main-section .img-wrapper {
+@media (max-width: 700px) {
+
+    .home-main-section .bigtree-image {
         display: none;
     }
-
     .home-main-section {
         justify-content: center;
+        flex-direction: column;
+    }
+
+
+
+    .preedit-main-section .bigtree-image {
+        margin-top: 2rem;
+        height: 30vh;
+        width: auto;
+        height: auto;
     }
 }
 
