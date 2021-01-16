@@ -90,16 +90,24 @@
 
 	<div id="rightPanel">
 		<canvas id="canvas"></canvas>
-		<script src="../scripts/canvas-script.js"></script>
 
 		<ul id="menu" style="left: -100%; top: -100%;">
-			<li class="menu-item" id="parent" onclick="AddNewConnection('parent')">Rodzic</li>
-			<li class="menu-item" id="child" onclick="AddNewConnection('child')">Dziecko</li>
+			<li class="menu-item" id="father" onclick="AddNewConnection('father')">Father</li>
+			<li class="menu-item" id="mother" onclick="AddNewConnection('mother')">Mother</li>
 			<li class="menu-item" id="partner" onclick="AddNewConnection('partner')">Partner</li>
 		</ul>
+
+		<div class="buttons-panel">
+			<img id="deletePersonButton" src="../images/delete-icon-2.png">
+			<img id="addPersonButton" src="../images/add-person-icon.png">
+			<img id="editPersonButton"src="../images/edit-icon-2.png">
+			<img id="clearConnectionButton"src="../images/clear-icon.png">
+			<img id="snapToGridButton" src="../images/magnet-icon.png">
+		</div>
+
 	</div>
+
+	<script src="../scripts/api.js"></script>
+	<script src="../scripts/canvas-script.js"></script>
 </body>
 </html>
-
-
-

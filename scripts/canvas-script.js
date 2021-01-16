@@ -6,7 +6,8 @@
 
 var drawableElements = []
 var toConnect = {dragedElement: 0, staticElement: 0}
-var snapToGrid = true
+var draggingElement = false
+var familyTreeId = 1
 
 /**************************************************************************************************************/
 
@@ -69,8 +70,8 @@ class Rectangle extends Drawable {
 class RectangleRounded extends Drawable {
     constructor(id, x, y, width, height, radious) {
         super(id)
-        this.x = x + viewport.x
-        this.y = y + viewport.y
+        this.x = x
+        this.y = y
         this.width = width
         this.height = height
         this.radious = radious
@@ -167,13 +168,14 @@ class Dragger {
     Drag(event) {
         var mouse = viewport.GetMousePosition(event)
 
-        if(snapToGrid == true) {
+        if(buttonMenager.snapToGrid == true) {
             this.dragedElement.x = Round(this.initialPosition.x + mouse.x - this.initialMouse.x , 30)
             this.dragedElement.y = Round(this.initialPosition.y + mouse.y - this.initialMouse.y , 30)
         }
         else {
-            this.dragedElement.x += event.movementX
-            this.dragedElement.y += event.movementY
+            var contextTransform = canvas.getContext("2d").getTransform()
+            this.dragedElement.x += event.movementX/contextTransform.a
+            this.dragedElement.y += event.movementY/contextTransform.d
         }
 
         UpdateCanvas()
@@ -182,8 +184,115 @@ class Dragger {
 
 class Connector {
     constructor() {
-        this.dragedElement
-        this.staticElement
+        this.selected
+    }
+}
+
+class ButtonMenager {
+    constructor() {
+        this.snapToGridVal = false
+        this.addingPersonVal = false
+        this.editPersonVal = false
+        this.clearConnectionVal = false
+        this.deletePersonVal = false
+    }
+
+    get snapToGrid() {
+        return this.snapToGridVal
+    }
+    set snapToGrid(val) {
+        this.snapToGridVal = val
+        this.UpdateUI()
+    }
+
+    get deletePerson() {
+        return this.deletePersonVal
+    }
+    set deletePerson(val) {
+        this.DisableAll()
+        this.deletePersonVal = val
+        this.UpdateUI()
+    }
+
+    get addingPerson() {
+        return this.addingPersonVal
+    }
+    set addingPerson(val) {
+        this.DisableAll()
+        this.addingPersonVal = val
+        this.UpdateUI()
+    }
+
+    get editPerson() {
+        return this.editPersonVal
+    }
+    set editPerson(val) {
+        this.DisableAll()
+        this.editPersonVal = val
+        this.UpdateUI()
+    }
+    
+    get clearConnection() {
+        return this.clearConnectionVal
+    }
+    set clearConnection(val) {
+        this.DisableAll()
+        this.clearConnectionVal = val
+        this.UpdateUI()
+    }
+
+    UpdateUI() {
+        if(this.deletePerson) {
+            deletePersonButton.style.backgroundColor = "#ff9200"
+        }
+        else {
+            deletePersonButton.style.backgroundColor = "antiquewhite"
+        }
+
+        if(this.addingPerson) {
+            addPersonButton.style.backgroundColor = "#ff9200"
+        }
+        else {
+            addPersonButton.style.backgroundColor = "antiquewhite"
+        }
+
+        if(this.editPerson) {
+            editPersonButton.style.backgroundColor = "#ff9200"
+        }
+        else {
+            editPersonButton.style.backgroundColor = "antiquewhite"
+        }
+
+        if(this.clearConnection) {
+            clearConnectionButton.style.backgroundColor = "#ff9200"
+        }
+        else {
+            clearConnectionButton.style.backgroundColor = "antiquewhite"
+        }
+
+        if(this.snapToGrid) {
+            snapToGridButton.style.backgroundColor = "#ff9200"
+        }
+        else {
+            snapToGridButton.style.backgroundColor = "antiquewhite"
+        }
+    }
+
+    DisableAll() {
+        this.deletePersonVal = false
+        this.addingPersonVal = false
+        this.editPersonVal = false
+        this.clearConnectionVal = false
+    }
+
+    ButtonsDisabled() {
+        if(!this.deletePerson && !this.addingPerson && !this.editPerson && !this.clearConnection) {
+            return true;
+        }
+        else {
+            return false;
+        }
+
     }
 }
 
@@ -198,44 +307,6 @@ class Connector {
 ///////////////////////////////
 //          EVENTS           //
 ///////////////////////////////
-
-function MouseDown(event) {
-    var mouse = viewport.GetMousePosition(event)
-
-    if(IsMouseOnRectangle(event) && IsMenuOff()) {
-        drawableElements.forEach(element => {
-            if(RectanglePointCollision(element, mouse.x, mouse.y)) {
-                canvas.addEventListener("mousemove", DragElement)
-                canvas.addEventListener("mouseup", OnMouseUp)
-                dragger.initialMouse = {x: mouse.x, y: mouse.y}
-                dragger.initialPosition = {x: element.x, y: element.y}
-                dragger.dragedElement = element
-            }
-        })
-    }
-}
-
-function MouseWheel(event) {
-    var context = canvas.getContext("2d")
-
-    var mouseStart = viewport.GetMousePosition(event)
-
-    if(event.deltaY > 0) {
-        context.scale(0.5, 0.5)
-        viewport.zoom *= 0.5
-    }
-    else {
-        context.scale(2, 2)
-        viewport.zoom *= 2
-    }
-
-    var mouseEnd = viewport.GetMousePosition(event)
-
-    viewport.x += mouseEnd.x - mouseStart.x
-    viewport.y += mouseEnd.y - mouseStart.y
-
-    UpdateCanvas()
-}
 
 function HideMenu(event) {
     var menu = document.querySelector("#menu")
@@ -253,27 +324,29 @@ function ShowMenu(event) {
 
 function AddNewConnection(type) {
     switch(type){
-        case "parent":
-            if(toConnect.staticElement.parent1Id == null) {
-                toConnect.staticElement.parent1Id = toConnect.dragedElement.id
-            }
-            else {
-                toConnect.staticElement.parent2Id = toConnect.dragedElement.id
+        case "father":
+            toConnect.dragedElement.parent1Id = toConnect.staticElement.id
 
-                var tmp = toConnect.staticElement
+            var newRelation = new Object
+            newRelation.father = toConnect.staticElement.id
+            Api.patchPersonById(toConnect.dragedElement.id, newRelation)
+
+            if(toConnect.dragedElement.parent2Id != null) {
+                var tmp = toConnect.dragedElement
                 toConnect.staticElement = drawableElements.find(e => e.id == tmp.parent1Id)
                 toConnect.dragedElement = drawableElements.find(e => e.id == tmp.parent2Id)
                 AddNewConnection("partner")
             }
         break;
 
-        case "child":
-            if(toConnect.dragedElement.parent1Id == null) {
-                toConnect.dragedElement.parent1Id = toConnect.staticElement.id
-            }
-            else {
-                toConnect.dragedElement.parent2Id = toConnect.staticElement.id
+        case "mother":
+            toConnect.dragedElement.parent2Id = toConnect.staticElement.id
 
+            var newRelation = new Object
+            newRelation.mother = toConnect.staticElement.id
+            Api.patchPersonById(toConnect.dragedElement.id, newRelation)    
+
+            if(toConnect.dragedElement.parent1Id != null) {
                 var tmp = toConnect.dragedElement
                 toConnect.staticElement = drawableElements.find(e => e.id == tmp.parent1Id)
                 toConnect.dragedElement = drawableElements.find(e => e.id == tmp.parent2Id)
@@ -284,10 +357,18 @@ function AddNewConnection(type) {
         case "partner":
             toConnect.dragedElement.partnersId.push(toConnect.staticElement.id)
             toConnect.staticElement.partnersId.push(toConnect.dragedElement.id)
+
+            var newRelation = new Object
+            newRelation.person_1 = toConnect.dragedElement.id
+            newRelation.person_2 = toConnect.staticElement.id
+            newRelation.mariage_date = null
+            newRelation.divorce_date = null
+            Api.postMariage(newRelation)
         break;
     }
 
     HideMenu()
+    UpdateCanvas()
 }
 
 function IsMenuOff() {
@@ -297,6 +378,7 @@ function IsMenuOff() {
     }
     return false
 }
+
 ///////////////////////////////
 //          CANVAS           //
 ///////////////////////////////
@@ -439,36 +521,78 @@ function ParentConnection(rect1, rect2) {
 //          MOUSE           //
 //////////////////////////////
 
-function OnMouseUp(event) {
-    canvas.removeEventListener("mousemove", DragElement)
-    canvas.removeEventListener("mouseup", OnMouseUp)
+function MouseUp(event) {
+    if(draggingElement) {
+        draggingElement = false
 
-    if(dragger.dragedElement != null) {
-        var rectangles = RectanglesUnderMouse(event)
+        if(ElementMoved()) {
+            var rectangles = RectanglesUnderMouse(event)
 
-        if(rectangles.length > 1) {
-            toConnect.dragedElement = dragger.dragedElement
-
-            for(var i = 0; i < rectangles.length; i++) {
-                if(rectangles[i].id != dragger.dragedElement.id) {
-                    toConnect.staticElement = rectangles[i]
+            if(rectangles.length > 1) {
+                toConnect.dragedElement = dragger.dragedElement
+    
+                for(var i = 0; i < rectangles.length; i++) {
+                    if(rectangles[i].id != dragger.dragedElement.id) {
+                        toConnect.staticElement = rectangles[i]
+                    }
                 }
+    
+                ShowMenu(event)
+                menu.addEventListener("mouseleave", HideMenu)
             }
-
-            ShowMenu(event)
-            menu.addEventListener("mouseleave", HideMenu)
+    
+            var newCoord = new Object
+            newCoord.x = dragger.dragedElement.x
+            newCoord.y = dragger.dragedElement.y
+            Api.patchPersonById(dragger.dragedElement.id, newCoord)
+            dragger.dragedElement = null
         }
-
-        dragger.dragedElement = null
+        else {
+            
+        }
     }
 }
 
-////////////////////////////////////
-//          INTERACTION           //
-////////////////////////////////////
+function MouseDown(event) {
+    if(event.which == 1) {
+        if(buttonMenager.ButtonsDisabled()) {
+            Drag(event)
+        }
+        if(buttonMenager.addingPerson) {
+            AddPerson(event)
+        }
+        if(buttonMenager.clearConnection) {
+            ClearConnection(event)
+        }
+        if(buttonMenager.editPerson) {
+            EditPerson(event)
+        }
+        if(buttonMenager.deletePerson) {
+            DeletePerson(event)
+        }
+    }
+}
 
-function DragElement(event) {
-    dragger.Drag(event)
+function MouseWheel(event) {
+    var context = canvas.getContext("2d")
+
+    var mouseStart = viewport.GetMousePosition(event)
+
+    if(event.deltaY > 0) {
+        context.scale(0.5, 0.5)
+        viewport.zoom *= 0.5
+    }
+    else {
+        context.scale(2, 2)
+        viewport.zoom *= 2
+    }
+
+    var mouseEnd = viewport.GetMousePosition(event)
+
+    viewport.x += mouseEnd.x - mouseStart.x
+    viewport.y += mouseEnd.y - mouseStart.y
+
+    UpdateCanvas()
 }
 
 function MouseMove(event) {
@@ -476,8 +600,161 @@ function MouseMove(event) {
         case 3:
             viewport.DragViewport(event)            
             break
+        case 1:
+            if(draggingElement) {
+                dragger.Drag(event)
+            }
         default:
             return
+    }
+}
+
+////////////////////////////////////
+//          INTERACTION           //
+////////////////////////////////////
+
+snapToGridButton.addEventListener("click", () => {
+    buttonMenager.snapToGrid = !buttonMenager.snapToGrid
+})
+
+deletePersonButton.addEventListener("click", () => {
+    buttonMenager.deletePerson = !buttonMenager.deletePerson
+})
+
+addPersonButton.addEventListener("click", () => {
+    buttonMenager.addingPerson = !buttonMenager.addingPerson
+})
+
+editPersonButton.addEventListener("click", () => {
+    buttonMenager.editPerson = !buttonMenager.editPerson
+})
+
+clearConnectionButton.addEventListener("click", () => {
+    buttonMenager.clearConnection = !buttonMenager.clearConnection
+})
+
+function Drag(event) {
+    var mouse = viewport.GetMousePosition(event)
+
+    if(IsMouseOnRectangle(event) && IsMenuOff()) {
+        drawableElements.forEach(element => {
+            if(RectanglePointCollision(element, mouse.x, mouse.y)) {
+                draggingElement = true;
+                dragger.initialMouse = {x: mouse.x, y: mouse.y}
+                dragger.initialPosition = {x: element.x, y: element.y}
+                dragger.dragedElement = element
+            }
+        })
+    }
+}
+
+function DeletePerson(event) {
+    var mouse = viewport.GetMousePosition(event)
+
+    if(IsMouseOnRectangle(event)) {
+        var Idx = drawableElements.findIndex(element => {
+            return RectanglePointCollision(element, mouse.x, mouse.y)
+        })
+
+        ClearConnectionOfElement(drawableElements[Idx])
+        Api.deletePersonById(drawableElements[Idx].id)
+        drawableElements.splice(Idx, 1)
+        UpdateCanvas()
+    }
+}
+
+function AddPerson(event) {
+    var mouse = viewport.GetMousePosition(event)
+
+    var person = new Object
+    person.family_tree = familyTreeId
+    person.father = null
+    person.mother = null
+    person.name = "Imie"
+    person.surname = "Nazwisko"
+    person.x = mouse.x
+    person.y = mouse.y
+    person.birth_date = null
+    person.nationality = ""
+    person.sex = "M"
+    person.birth_place = ""
+    person.death_date = null
+    person.death_cause = ""
+
+    Api.postPerson(person).then( e => {
+        var tmp = new PersonBlock(
+            e.id, e.x, e.y, "../images/default-avatar.png",
+            e.name, e.surname,
+            e.father, e.mother)
+
+        drawableElements.push(tmp)
+        UpdateCanvas()
+    })
+}
+
+function ClearConnection(event) {
+    var mouse = viewport.GetMousePosition(event)
+
+    if(IsMouseOnRectangle(event)) {
+        drawableElements.forEach(element => {
+            if(RectanglePointCollision(element, mouse.x, mouse.y)) {
+                ClearConnectionOfElement(element)
+            }
+        })
+    }
+}
+
+function ClearConnectionOfElement(element) {
+    element.parent1Id = null
+    element.parent2Id = null
+    element.partnersId = []
+
+    drawableElements.forEach(el => {
+        if(el.parent1Id == element.id){
+            el.parent1Id = null
+            var newRelation = new Object
+            newRelation.father = null
+            Api.patchPersonById(el.id, newRelation)
+        }
+        if(el.parent2Id == element.id){
+            el.parent2Id = null
+            var newRelation = new Object
+            newRelation.mother = null
+            Api.patchPersonById(el.id, newRelation)
+        }
+
+        var idx = el.partnersId.findIndex(partnerId => {
+            return partnerId == element.id
+        })
+        if(idx != -1) {
+            el.partnersId.splice(idx,1)
+        }
+    })
+
+    Api.getMariages().then( list => {
+        list.forEach(row => {
+            if(element.id == row.person_1 || element.id == row.person_2) {
+                Api.deleteMariagesById(row.id)
+            }
+        })
+    })
+
+    var newRelation = new Object
+    newRelation.father = null
+    newRelation.mother = null
+    Api.patchPersonById(element.id, newRelation)
+    UpdateCanvas()
+}
+
+function EditPerson(event) {
+    var mouse = viewport.GetMousePosition(event)
+
+    if(IsMouseOnRectangle(event)) {
+        drawableElements.forEach(element => {
+            if(RectanglePointCollision(element, mouse.x, mouse.y)) {
+                
+            }
+        })
     }
 }
 
@@ -533,6 +810,44 @@ function Round(x, factor) {
     }
 }
 
+function GetPersons() {
+    Api.getFamilyTreeById(familyTreeId).then( treeData => {
+        var persons = treeData.persons
+
+        persons.forEach(e => {
+            var tmp = new PersonBlock(
+                e.id, e.x, e.y, e.profile_pic,
+                e.name, e.surname,
+                e.father, e.mother)
+
+            if(e.profile_pic == "") {
+                tmp.imagePath = "../images/default-avatar.png"
+            }
+            
+            e.mariages.forEach(mariage => {
+                if(mariage.person_1 == e.id) {
+                    tmp.partnersId.push(mariage.person_2)
+                }
+                else {
+                    tmp.partnersId.push(mariage.person_1)
+                }
+            })
+
+            drawableElements.push(tmp)
+        });
+
+        UpdateCanvas()
+    })
+}
+
+function ElementMoved() {
+    if(dragger.initialPosition.x != dragger.dragedElement.x ||
+       dragger.initialPosition.y != dragger.dragedElement.y) {
+           return true
+       }
+    return false
+}
+
 /**************************************************************************************************************/
 
 ///////////////////////////////////////
@@ -543,6 +858,8 @@ function Round(x, factor) {
 
 var viewport = new Viewport()
 var dragger = new Dragger()
+var connector = new Connector
+var buttonMenager = new ButtonMenager
 
 window.onload = function() {
     dragElement(document.getElementById("addFactDiv"));
@@ -563,8 +880,10 @@ window.addEventListener("load", () => {
     canvas.addEventListener('contextmenu', event => event.preventDefault());
     canvas.addEventListener("mousemove", MouseMove)
     canvas.addEventListener("mousedown", MouseDown)
+    canvas.addEventListener("mouseup", MouseUp)
     canvas.addEventListener("wheel", MouseWheel)
 
+    GetPersons()
     UpdateCanvas()
 })
 
@@ -576,8 +895,3 @@ window.addEventListener("resize", () => {
 
     UpdateCanvas()
 })
-
-drawableElements.push(new PersonBlock(0, 0, 0, "../images/default-avatar.png", "Mike", "Wazowski"))
-drawableElements.push(new PersonBlock(1, 0, 400, "../images/default-avatar.png", "Mike", "Wazowski"))
-drawableElements.push(new PersonBlock(2, 0, 800, "../images/default-avatar.png", "Mike", "Wazowski"))
-drawableElements.push(new PersonBlock(3, 0, 1200, "../images/default-avatar.png", "Mike", "Wazowski"))
