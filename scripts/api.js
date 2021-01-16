@@ -1,5 +1,5 @@
 const Api = (() => {
-  var baseURL = "http://127.0.0.1:8000/";
+  var baseURL = new URL("http://127.0.0.1:8000/");
 
   function getCSRFCookie() {
     const name = "csrftoken";
@@ -19,15 +19,19 @@ const Api = (() => {
 
   function handleErrors(response) {
     if (!response.ok) {
+      let statusCode = response.status;
       return response.json().then((error) => {
-        throw error;
+        throw { status_code: statusCode, error: error };
       });
     }
     return response;
   }
 
-  const getBasic = (endpoint, id) => {
-    let url = baseURL + endpoint + "/" + (id ? id + "/" : "");
+  const getBasic = (endpoint, id = null, searchParams = null) => {
+    let url = new URL(endpoint + "/" + (id ? id + "/" : ""), baseURL);
+    if (searchParams) {
+      url.searchParams = searchParams;
+    }
     return fetch(url, {
       method: "GET",
       credentials: "include",
@@ -37,7 +41,7 @@ const Api = (() => {
   };
 
   const addBasic = (method, data, endpoint, id) => {
-    let url = baseURL + endpoint + "/" + (id ? id + "/" : "");
+    let url = new URL(endpoint + "/" + (id ? id + "/" : ""), baseURL);
     return fetch(url, {
       method: method,
       credentials: "include",
@@ -52,7 +56,7 @@ const Api = (() => {
   };
 
   const addMedia = (method, formData, endpoint, id) => {
-    let url = baseURL + endpoint + "/" + (id ? id + "/" : "");
+    let url = new URL(endpoint + "/" + (id ? id + "/" : ""), baseURL);
     return fetch(url, {
       method: method,
       credentials: "include",
@@ -70,144 +74,194 @@ const Api = (() => {
   const patchBasic = (endpoint, id, data) => addBasic("PATCH", data, endpoint, id);
 
   const deleteBasic = (endpoint, id) => {
-    let url = baseURL + endpoint + "/" + (id ? id + "/" : "");
+    let url = new URL(endpoint + "/" + (id ? id + "/" : ""), baseURL);
     return fetch(url, {
       method: "DELETE",
       credentials: "include",
       headers: {
         "X-CSRFToken": getCSRFCookie(),
       },
-    })
-      .then(handleErrors)
-      .then((response) => response.json());
+    }).then(handleErrors);
   };
 
   // Fetch functions to use
 
-  const getEvents = () => getBasic("events");
+  /**
+   * @param  {Number} personId
+   * @throws { status_code: Number, error: JSON }
+   */
+  const getEvents = (personId = null) =>
+    getBasic("events", null, personId ? new URLSearchParams("person", personId) : null);
   /**
    * @param  {Number} eventId
+   * @throws { status_code: Number, error: JSON }
    */
   const getEventById = (eventId) => getBasic("events", eventId);
   /**
    * @param  {object} data
+   * @throws { status_code: Number, error: JSON }
    */
   const postEvent = (data) => postBasic("events", data);
   /**
    * @param  {Number} eventId
    * @param  {object} data
+   * @throws { status_code: Number, error: JSON }
    */
   const putEventById = (eventId, data) => putBasic("events", eventId, data);
   /**
    * @param  {Number} eventId
    * @param  {object} data
+   * @throws { status_code: Number, error: JSON }
    */
   const patchEventById = (eventId, data) => patchBasic("events", eventId, data);
   /**
    * @param  {Number} eventId
+   * @throws { status_code: Number, error: JSON }
    */
   const deleteEventById = (eventId) => deleteBasic("events", eventId);
-
+  /**
+   * @throws { status_code: Number, error: JSON }
+   */
   const getFamilyTrees = () => getBasic("family-trees");
   /**
    * @param  {Number} familyTreeId
+   * @throws { status_code: Number, error: JSON }
    */
   const getFamilyTreeById = (familyTreeId) => getBasic("family-trees", familyTreeId);
   /**
    * @param  {object} data
+   * @throws { status_code: Number, error: JSON }
    */
   const postFamilyTree = (data) => postBasic("family-trees", data);
 
   /**
    * @param  {Number} familyTreeId
    * @param  {object} data
+   * @throws { status_code: Number, error: JSON }
    */
   const putFamilyTreeById = (familyTreeId, data) => putBasic("family-trees", familyTreeId, data);
   /**
    * @param  {Number} familyTreeId
    * @param  {Object} data
+   * @throws { status_code: Number, error: JSON }
    */
   const patchFamilyTreeById = (familyTreeId, data) =>
     patchBasic("family-trees", familyTreeId, data);
   /**
    * @param  {Number} familyTreeId
+   * @throws { status_code: Number, error: JSON }
    */
   const deleteFamilyTreeById = (familyTreeId) => deleteBasic("family-trees", familyTreeId);
-
-  const getMariages = () => getBasic("mariages");
+  /**
+   * @param  {Number} familyTreeId
+   * @throws { status_code: Number, error: JSON }
+   */
+  const getMariages = (familyTreeId = null) =>
+    getBasic(
+      "mariages",
+      null,
+      familyTreeId ? new URLSearchParams("family_tree", familyTreeId) : null
+    );
 
   /**
    * @param  {Number} mariagesId
+   * @throws { status_code: Number, error: JSON }
    */
   const getMariagesById = (mariagesId) => getBasic("mariages", mariagesId);
   /**
    * @param  {object} data
+   * @throws { status_code: Number, error: JSON }
    */
   const postMariage = (data) => postBasic("mariages", data);
   /**
    * @param  {Number} mariageId
    * @param  {object} data
+   * @throws { status_code: Number, error: JSON }
    */
   const putMariageById = (mariageId, data) => putBasic("mariages", mariageId, data);
   /**
    * @param  {Number} mariageId
    * @param  {object} data
+   * @throws { status_code: Number, error: JSON }
    */
   const patchMariageById = (mariageId, data) => patchBasic("mariages", mariageId, data);
   /**
    * @param  {Number} mariagesId
+   * @throws { status_code: Number, error: JSON }
    */
   const deleteMariagesById = (mariagesId) => getBasic("mariages", mariagesId);
-
-  const getMedias = () => getBasic("medias");
+  /**
+   * @param  {Number} personId
+   * @throws { status_code: Number, error: JSON }
+   */
+  const getMedias = (personId = null) =>
+    getBasic("medias", null, personId ? new URLSearchParams("person", personId) : null);
 
   /**
    * @param  {Number} mediaId
+   * @throws { status_code: Number, error: JSON }
    */
   const getMediaById = (mediaId) => getBasic("medias", mediaId);
 
   /**
    * @param  {FormData} formData
+   * @throws { status_code: Number, error: JSON }
    */
   const postMedia = (formData) => addMedia("POST", formData, "medias");
 
   /**
    * @param  {Number} mediaId
    * @param  {FormData} formData
+   * @throws { status_code: Number, error: JSON }
    */
   const putMediaById = (mediaId, formData) => addMedia("PUT", formData, "medias", mediaId);
   /**
    * @param  {Number} mediaId
    * @param  {FormData} formData
+   * @throws { status_code: Number, error: JSON }
    */
   const patchMediaById = (mediaId, formData) => addMedia("PATCH", formData, "medias", mediaId);
   /**
    * @param  {Number} mediaId
+   * @throws { status_code: Number, error: JSON }
    */
   const deleteMediaById = (mediaId) => deleteBasic("medias", mediaId);
-
-  const getPersons = () => getBasic("persons");
+  /**
+   * @param  {Number} familyTreeId
+   * @throws { status_code: Number, error: JSON }
+   */
+  const getPersons = (familyTreeId = null) =>
+    getBasic(
+      "persons",
+      null,
+      familyTreeId ? new URLSearchParams("family_tree", familyTreeId) : null
+    );
 
   /**
    * @param  {Number} personId
+   * @throws { status_code: Number, error: JSON }
    */
   const getPersonById = (personId) => getBasic("persons", personId);
   /**
    * @param  {object} data
+   * @throws { status_code: Number, error: JSON }
    */
   const postPerson = (data) => postBasic("persons", data);
   /**
    * @param  {Number} personId
    * @param  {object} data
+   * @throws { status_code: Number, error: JSON }
    */
   const putPersonById = (personId, data) => putBasic("persons", personId, data);
   /**
    * @param  {Number} personId
    * @param  {object} data
+   * @throws { status_code: Number, error: JSON }
    */
   const patchPersonById = (personId, data) => patchBasic("persons", personId, data);
   /**
    * @param  {Number} personId
+   * @throws { status_code: Number, error: JSON }
    */
   const deletePersonById = (personId) => deleteBasic("persons", personId);
 
@@ -216,16 +270,21 @@ const Api = (() => {
   const getToken = () => getBasic("auth/csrf-cookie");
   /**
    * @param  {object} data
+   * @throws { status_code: Number, error: JSON }
    */
   const login = (data) => postBasic("auth/login", data);
   /**
-   * @param  {object} data
+   * @throws { status_code: Number, error: JSON }
    */
-  const logout = (data) => postBasic("auth/logout", null);
+  const logout = () => postBasic("auth/logout", null);
   /**
    * @param  {object} data
+   * @throws { status_code: Number, error: JSON }
    */
   const register = (data) => postBasic("auth/register", data);
+  /**
+   * @throws { status_code: Number, error: JSON }
+   */
   const getIsAuthenticated = () => getBasic("auth/authentication");
 
   return {
