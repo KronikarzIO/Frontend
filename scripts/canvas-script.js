@@ -731,7 +731,7 @@ function ClearConnectionOfElement(element) {
         }
     })
 
-    Api.getMariages().then( list => {
+    Api.getMariages(familyTreeId).then( list => {
         list.forEach(row => {
             if(element.id == row.person_1 || element.id == row.person_2) {
                 Api.deleteMariagesById(row.id)
