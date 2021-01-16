@@ -189,7 +189,7 @@ const Api = (() => {
    * @param  {Number} mariagesId
    * @throws { status_code: Number, error: JSON }
    */
-  const deleteMariagesById = (mariagesId) => getBasic("mariages", mariagesId);
+  const deleteMariagesById = (mariagesId) => deleteBasic("mariages", mariagesId);
   /**
    * @param  {Number} personId
    * @throws { status_code: Number, error: JSON }
