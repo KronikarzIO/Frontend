@@ -426,3 +426,34 @@ ul {
 ::-webkit-scrollbar {
     display: none;
   }
+
+.buttons-panel {
+	width: 70px;
+	height: fit-content;
+
+	margin-right: 10px;
+
+	display: flex;
+	flex-direction: column;
+
+	position: fixed;
+	right: 0px;
+	bottom: 0px;
+}
+
+.buttons-panel img {
+	width: 100%;
+	padding: 10px;
+	box-sizing: border-box;
+	background-color: antiquewhite;
+	border-radius: 5px;
+	margin-bottom: 10px;
+}
+
+.buttons-panel img:hover {
+	background-color: #c7bbab;
+}
+
+.buttons-panel img:active {
+	background-color: #ff9200;
+}
