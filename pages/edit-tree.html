@@ -19,7 +19,7 @@
 				<div></div>
 			</a>
 			<span id="famForestText">Fam Forest </span>
-			<img src="../images/tree.png" alt="Zdjęcie użytkownika" id="tree-icon" >
+			<img src="../images/tree.png" alt="Zdjęcie użytkownika" id="treeIcon" >
 	</div>
 
 
@@ -51,6 +51,17 @@
       			<img src="../images/add-picture-icon.png" id="addPictureToSection"  />
    			</label>
 		</div>
+		<div id="infoHeader">
+			<span id="infoHeaderSpan">Infos</span>
+		</div>
+		<div id="infoSection">
+			<span>Father: </span>		 <span id="fatherInfo"></span><br>
+			<span>Mother: </span>	 	 <span id="motherInfo"></span><br>
+			<span>Nationality: </span>	 <span id="nationalityInfo"></span><br>
+			<span>Sex: </span> 			 <span id="sexInfo"></span><br>
+			<span>Birth place: </span> 	 <span id="birthPlaceInfo"></span><br>
+			<span>Death cause: </span> 	 <span id="deathCauseInfo"></span><br>
+		</div>
 		<div id="factsHeader">
 			<span id="factsHeaderSpan">Facts</span>
 			<span id="addFactsButton" onclick='showDiv("addFactDiv")'>Add facts </span>
@@ -63,7 +74,7 @@
 
 	<div id="addFactDiv">
 		<div id="addFactDivheader">
-			<img src="../images/cancel-icon.png" id="cancelFact-icon" onclick='showDiv("addFactDiv")' >	
+			<img src="../images/cancel-icon.png" id="cancelFactIcon" onclick='showDiv("addFactDiv")' >	
 		</div>
 		<input type="text" id="factDate" placeholder="Date" class="factInput" > <br>
 		<input type="text" id="factTitle" placeholder="Title" class="factInput" > <br>
@@ -74,7 +85,7 @@
 
 	<div id="editProfileDiv" >
 		<div id="editProfileDivheader">
-			<img src="../images/cancel-icon.png" id="cancelEdit-icon" onclick='showDiv("editProfileDiv")' >
+			<img src="../images/cancel-icon.png" id="cancelEditIcon" onclick='showDiv("editProfileDiv")' >
 		</div>
 		<input type="file"  accept="image/*" name="image" id="file"  onchange="loadFile(event)" style="display: none;">
 		<label for="file" style="cursor: pointer;"><img src="" id="editUserPhoto"  /></label>
@@ -82,6 +93,12 @@
 		<input type="text" id="editSurname" placeholder="Surname" class="editFactInput" > <br>
 		<input type="text" id="editBirthDate" placeholder="Day of birth" class="editFactInput" > <br>
 		<input type="text" id="editDeathDay" placeholder="Death day" class="editFactInput" > <br>
+		<input type="text" id="editFather" placeholder="Father" class="editFactInput" > <br>
+		<input type="text" id="editMother" placeholder="Mother" class="editFactInput" > <br>
+		<input type="text" id="editNationality" placeholder="Nationality" class="editFactInput" > <br>
+		<input type="text" id="editSex" placeholder="Sex" class="editFactInput" > <br>
+		<input type="text" id="editBirthPlace" placeholder="Birth place" class="editFactInput" > <br>
+		<input type="text" id="editDeathCause" placeholder="Death cause" class="editFactInput" > <br>
 		<img src="../images/edit-icon.png" alt="" id="editInfo" onclick='editInfo()'>
 
 	</div>

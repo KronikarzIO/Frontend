@@ -110,7 +110,6 @@ function addFact(){
 
 function deleteFactDiv(div){
 
-
 	let factDate = div.getElementsByClassName("factDate");
 	let factTitle = div.getElementsByClassName("factTitle");
 	let factDescription = div.getElementsByClassName("factDescription");
@@ -148,6 +147,14 @@ function showEditProfileDiv(){
 		document.getElementById("editSurname").value = document.getElementById("surnameInfo").innerHTML;
 		document.getElementById("editBirthDate").value = document.getElementById("birthDateInfo").innerHTML;
 		document.getElementById("editDeathDay").value = document.getElementById("deathDateInfo").innerHTML;
+		document.getElementById("editFather").value = document.getElementById("fatherInfo").innerHTML;
+		document.getElementById("editMother").value = document.getElementById("motherInfo").innerHTML;
+		document.getElementById("editNationality").value = document.getElementById("nationalityInfo").innerHTML;
+		document.getElementById("editSex").value = document.getElementById("sexInfo").innerHTML;
+		document.getElementById("editBirthPlace").value = document.getElementById("birthPlaceInfo").innerHTML;
+		document.getElementById("editDeathCause").value = document.getElementById("deathCauseInfo").innerHTML;
+
+
 
 	}
 }
@@ -169,6 +176,12 @@ function editInfo(){
 	user.birthDay = document.getElementById("editBirthDate").value;
 	user.deathDay = document.getElementById("editDeathDay").value;
 	user.profilePicture = document.getElementById("editUserPhoto").src;
+	user.father = document.getElementById("editFather").value;
+	user.mother = document.getElementById("editMother").value;
+	user.nationality = document.getElementById("editNationality").value;
+	user.sex = document.getElementById("editSex").value;
+	user.birthPlace = document.getElementById("editBirthPlace").value;
+	user.deathCause = document.getElementById("editDeathCause").value;
 
 	document.getElementById("userPhoto").src = user.profilePicture;
 	document.getElementById("nameInfo").innerHTML = user.name;
@@ -176,6 +189,12 @@ function editInfo(){
 	document.getElementById("birthDateInfo").innerHTML = user.birthDay;
 	document.getElementById("deathDateInfo").innerHTML = user.deathDay;
 
+	document.getElementById("fatherInfo").innerHTML = user.father;
+	document.getElementById("motherInfo").innerHTML = user.mother;
+	document.getElementById("nationalityInfo").innerHTML = user.nationality;
+	document.getElementById("sexInfo").innerHTML = user.sex;
+	document.getElementById("birthPlaceInfo").innerHTML = user.birthPlace;
+	document.getElementById("deathCauseInfo").innerHTML = user.deathCause;
 
 
 
@@ -277,11 +296,42 @@ function createDiv(varName, className){
 }
 
 
+function dropAllImages() {
+	try{
+		var getDivId = document.getElementById("picturesSection");
+		var images = getDivId.getElementsByClassName("addedPictures");
+
+		for(let i = images.length-1;i > -1; i--){
+			images[i].parentNode.removeChild(images[i]);
+		}
+		
+	}catch(err) {}
+}
+
+
+function dropAllFacts(){
+	try{
+		var getDivId = document.getElementById("addfactsSection");
+		var facts = getDivId.getElementsByClassName("addedFact");
+
+		for(let i = facts.length-1;i > -1; i--){
+			facts[i].parentNode.removeChild(facts[i]);
+		}
+		
+	}catch(err) {}
+
+}
+
+
+
 var user = new UserData("Jan", "Kowalski", "08.08.1980", "", "../images/random-img-3.png",
 	['../images/random-img-1.jpg', '../images/random-img-2.jpg'],
-	[['2020.05.05','Wydarzenie 1','Krótki opis wydarzenia'],['2020.05.06','Wydarzenie 2','Kolejny opis wydarzenia']]);
+	[['2020.05.05','Wydarzenie 1','Krótki opis wydarzenia'],['2020.05.06','Wydarzenie 2','Kolejny opis wydarzenia']],
+	"Poland","Male","Kraków","","NN","NN");
 
-function UserData(name, surname, birthDay, deathDay, profilePicture, userPictures, userFacts){
+function UserData(name, surname, birthDay, deathDay, profilePicture, userPictures, userFacts, nationality, sex,
+	birthPlace, deathCause, mother, father){
+
 	this.name = name;
 	this.surname = surname;
 	this.birthDay = birthDay;
@@ -289,7 +339,12 @@ function UserData(name, surname, birthDay, deathDay, profilePicture, userPicture
 	this.profilePicture = profilePicture;
 	this.userPictures = userPictures;
 	this.userFacts = userFacts;
-
+	this.nationality = nationality;
+	this.sex = sex;
+	this.birthPlace = birthPlace;
+	this.deathCause = deathCause;
+	this.mother = mother;
+	this.father = father;
 
 }
 
@@ -301,7 +356,17 @@ function loadUser(){
 	document.getElementById("birthDateInfo").innerHTML = user.birthDay;
 	document.getElementById("deathDateInfo").innerHTML = user.deathDay;
 	document.getElementById("userPhoto").src = user.profilePicture;
+	document.getElementById("fatherInfo").innerHTML = user.father;
+	document.getElementById("motherInfo").innerHTML = user.mother;
+	document.getElementById("nationalityInfo").innerHTML = user.nationality;
+	document.getElementById("sexInfo").innerHTML = user.sex;
+	document.getElementById("birthPlaceInfo").innerHTML = user.birthPlace;
+	document.getElementById("deathCauseInfo").innerHTML = user.deathCause;
+
+	dropAllImages();
 	user.userPictures.forEach(picture => {addPicture(picture);});
 	addPicturesToArray();
+
+	dropAllFacts();
 	addFactFromFile();
 }
