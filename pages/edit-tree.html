@@ -4,91 +4,80 @@
 <head>
   <meta charset="utf-8">
   <title>Create Your Tree!</title>
-  <meta name="author" content="">
-  <meta name="description" content="">
   <script src="../scripts/edit-tree.js"></script>
-  <link href="../styles/style.css" rel="stylesheet">
+  <link href="../styles/edit-tree.css" rel="stylesheet">
 </head>
 
 <body>
 
 	<div id="banner">
-			<a href="#" id="mnicon" class="mniconclose" onclick="showHideNav()"> 
-				<div></div>
-				<div></div>
-				<div></div>
-			</a>
-			<span id="famForestText">Fam Forest </span>
-			<img src="../images/tree.png" alt="Zdjęcie użytkownika" id="tree-icon" >
+			<span id="fam-tree-text">Fam Forest </span>
+			<img src="../images/tree.png" id="tree-icon" >
 	</div>
 
-
-	<div id="leftPanel" class="leftPanelOpen">
-		<div id="userInfoPanel">
-			<img src="../images/random-img-3.png" alt="Zdjęcie użytkownika" id="userPhoto" >
-			<div id="userInfo">
-				<span id="nameInfo">Name</span>
-				<br>
-				<span id="surnameInfo">Surname</span>
-				<img src="../images/born-icon.png" alt="" id="bornImage" >
-				<span id="birthDateInfo">09.09.2020</span>
-				<br>
-				<img src="../images/died-icon.png" alt="" id="graveImage" >
-				<span id="deathDateInfo">09.09.2077</span>
+	<div id="leftPanel">
+		<form>
+			<div id="avatar">
+				<img src="../images/default-avatar.png">
 			</div>
-			<img src="../images/edit-icon.png" alt="" id="editImage" onclick='showEditProfileDiv()' class="btn" >
-			<img src="../images/add-icon.png" alt="" id="addImage" class="btn" >
-			<img src="../images/more-icon.png" alt="" id="moreImage" class="btn" >
-			<img src="../images/delete-icon.png" alt="" id="deleteImage" class="btn" >
-		</div>
-		<div id="picturesHeader">
-			<span id="pictureHeaderSpan">Pictures</span>
-			<img src="../images/bin-icon.png" alt="" id="deleteImg" ondrop="drop(event)" ondragover="allowDrop(event)">
-		</div>
-		<div id="picturesSection">
-  			<label for="image">
-      			<input type="file" name="image" id="image"  class="addPictures" style="display:none;"/>
-      			<img src="../images/add-picture-icon.png" id="addPictureToSection"  />
-   			</label>
-		</div>
-		<div id="factsHeader">
-			<span id="factsHeaderSpan">Facts</span>
-			<span id="addFactsButton" onclick='showDiv("addFactDiv")'>Add facts </span>
-		</div>
-		<div id="addfactsSection">
-		</div>
 
+			<div id="personal-data">
+				<input type="text" id="name" name="name" placeholder="name">
+				<input type="text" id="surname" name="surname" placeholder="surname">
+			</div>
+
+			<div id="other-data">
+				<label for="gender">Gender: </label>
+				<select id="gender">
+					<option value="M">Male</option>
+					<option value="F">Female</option>
+					<option value="O">Other</option>
+				</select>
+				<br><br>
+
+				<label for="nationality">Nationality: </label>
+				<input type="text" id="nationality" name="nationality" placeholder="Nationality">
+				<br>
+
+				<label for="birth-place">Birth place: </label>
+				<input type="text" id="birthPlace" name="birth-place" placeholder="Birth place">
+				<br>
+
+				<label for="birth-date">Birth date: </label>
+				<input type="date" id="birthDate" name="birth-date" placeholder="Birth date">
+				<br><br>
+
+				<label for="death-date">Death date: </label>
+				<input type="date" id="deathDate" name="death-date" placeholder="Death-date">
+				<br>
+
+				<label for="death-cause">Death cause: </label>
+				<input type="text" id="deathCause" name="death-cause" placeholder="Death-cause">
+			</div>
+
+			<div id="mariages">
+				<span style="font-size: 1.5em;">Mariages</span>
+				<ul id="mariagesList">
+					
+				</ul>
+			</div>
+
+			<div id="events">
+				<span style="font-size: 1.5em;">Events</span>
+				<br>
+				<img src="../images/add-icon-2.png" onclick="AddEvent()">
+				<ul id="eventsList">
+					<li>
+						
+					</li>
+				</ul>
+			</div>
+
+			<button Id="saveForm" type="button">Zapisz</button>
+		</form>
 	</div>
 
-
-	<div id="addFactDiv">
-		<div id="addFactDivheader">
-			<img src="../images/cancel-icon.png" id="cancelFact-icon" onclick='showDiv("addFactDiv")' >	
-		</div>
-		<input type="text" id="factDate" placeholder="Date" class="factInput" > <br>
-		<input type="text" id="factTitle" placeholder="Title" class="factInput" > <br>
-		<input type="text" id="factDescription" placeholder="Description" class="factInput" > <br>
-		<img src="../images/add-icon.png" id="addFactButton" onclick="addFact()" >
-	</div>
-
-
-	<div id="editProfileDiv" >
-		<div id="editProfileDivheader">
-			<img src="../images/cancel-icon.png" id="cancelEdit-icon" onclick='showDiv("editProfileDiv")' >
-		</div>
-		<input type="file"  accept="image/*" name="image" id="file"  onchange="loadFile(event)" style="display: none;">
-		<label for="file" style="cursor: pointer;"><img src="" id="editUserPhoto"  /></label>
-		<input type="text" id="editName" placeholder="Name" class="editFactInput" > <br>
-		<input type="text" id="editSurname" placeholder="Surname" class="editFactInput" > <br>
-		<input type="text" id="editBirthDate" placeholder="Day of birth" class="editFactInput" > <br>
-		<input type="text" id="editDeathDay" placeholder="Death day" class="editFactInput" > <br>
-		<img src="../images/edit-icon.png" alt="" id="editInfo" onclick='editInfo()'>
-
-	</div>
-
-	<div id="lightbox"></div>
-
-	<div id="rightPanel">
+	<div id="right-panel">
 		<canvas id="canvas"></canvas>
 
 		<ul id="menu" style="left: -100%; top: -100%;">
