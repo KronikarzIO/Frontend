@@ -35,10 +35,13 @@ class Viewport {
 
     DragViewport(event) {
         var contextTransform =  canvas.getContext("2d").getTransform()
-        if(this.x + event.movementX / contextTransform.a < 5000 && this.x + event.movementX / contextTransform.a > 0 &&
-           this.y + event.movementY / contextTransform.d < 5000 && this.y + event.movementY / contextTransform.d > 0) {
-            this.x += event.movementX / contextTransform.a
-            this.y += event.movementY / contextTransform.d
+        if((this.x + event.movementX / contextTransform.a < -border.x + canvas.width / contextTransform.a / 2 || this.x + event.movementX < this.x)  &&
+           (this.x + event.movementX / contextTransform.a > -border.x - border.width + canvas.width / contextTransform.a / 2 || this.x + event.movementX > this.x)) {
+               this.x += event.movementX / contextTransform.a
+           }
+        if((this.y + event.movementY / contextTransform.d < -border.y + canvas.height / contextTransform.d / 2 || this.y + event.movementY < this.y) &&
+           (this.y + event.movementY / contextTransform.d > -border.y - border.height + canvas.height / contextTransform.d / 2 || this.y + event.movementY > this.y)) {
+                this.y += event.movementY / contextTransform.d
         }
         UpdateCanvas()
     }
@@ -178,8 +181,14 @@ class Dragger {
         }
         else {
             var contextTransform = canvas.getContext("2d").getTransform()
-            this.dragedElement.x += event.movementX/contextTransform.a
-            this.dragedElement.y += event.movementY/contextTransform.d
+            if(this.dragedElement.x + event.movementX/contextTransform.a > border.x &&
+               this.dragedElement.x + event.movementX/contextTransform.a + this.dragedElement.width < border.x + border.width) {
+                this.dragedElement.x += event.movementX/contextTransform.a
+            }
+            if(this.dragedElement.y + event.movementY / contextTransform.d > border.y &&
+               this.dragedElement.y + event.movementY / contextTransform.d  + this.dragedElement.height < border.y + border.height) {
+                    this.dragedElement.y += event.movementY/contextTransform.d
+            }
         }
 
         UpdateCanvas()
@@ -282,6 +291,27 @@ class ButtonMenager {
     }
 }
 
+class Border extends Drawable {
+    constructor(x, y, width, height) {
+        super(-1)
+        this.x = x
+        this.y = y
+        this.width = width
+        this.height = height
+    }
+
+    Draw() {
+        var x = this.x + viewport.x
+        var y = this.y + viewport.y
+
+        this.context.beginPath()
+        this.context.lineWidth = "10"
+        this.context.strokeStyle = "red";
+        this.context.rect(x, y, this.width, this.height)
+        this.context.stroke()
+    }
+}
+
 /**************************************************************************************************************/
 
 //////////////////////////////////////
@@ -380,6 +410,8 @@ function UpdateCanvas() {
     drawableElements.forEach(element => {
         element.Draw(viewport)
     });
+
+    border.Draw()
 }
 
 function DrawConnections() {
@@ -412,7 +444,10 @@ function ChildConnection(child, parent1, parent2 = null) {
     var StartY2
     var EndX = child.x+child.width/2 + viewport.x
     var EndY = child.y+child.height/2 + viewport.y
-    
+
+
+    context.lineWidth = "1"
+    context.strokeStyle = "black";
     if(parent2 != null) {
         if(parent2 != null) {
             StartX2 = parent2.x+parent2.width/2 + viewport.x
@@ -485,6 +520,9 @@ function ParentConnection(rect1, rect2) {
 
     var lineX = StartX
     var lineY = StartY
+
+    context.lineWidth = "5"
+    context.strokeStyle = "black";
 
     context.beginPath()
     context.moveTo(StartX, StartY)
@@ -565,6 +603,11 @@ function MouseWheel(event) {
     var context = canvas.getContext("2d")
 
     var mouseStart = viewport.GetMousePosition(event)
+
+    if(mouseStart.x < border.x || mouseStart.x > border.x + border.width ||
+        mouseStart.y < border.y || mouseStart.y > border.y + border.height) {
+            return
+        }
 
     if(event.deltaY > 0) {
         if(viewport.zoom * 0.5 > 0.0620) {
@@ -844,6 +887,7 @@ var viewport = new Viewport()
 var dragger = new Dragger()
 var connector = new Connector
 var buttonMenager = new ButtonMenager
+var border = new Border(-10000, -10000, 20000, 20000)
 
 window.addEventListener("load", () => {
     CheckIfLogged()
