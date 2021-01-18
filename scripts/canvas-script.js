@@ -196,7 +196,6 @@ class ButtonMenager {
     constructor() {
         this.snapToGridVal = false
         this.addingPersonVal = false
-        this.editPersonVal = false
         this.clearConnectionVal = false
         this.deletePersonVal = false
     }
@@ -226,15 +225,6 @@ class ButtonMenager {
         this.addingPersonVal = val
         this.UpdateUI()
     }
-
-    get editPerson() {
-        return this.editPersonVal
-    }
-    set editPerson(val) {
-        this.DisableAll()
-        this.editPersonVal = val
-        this.UpdateUI()
-    }
     
     get clearConnection() {
         return this.clearConnectionVal
@@ -260,13 +250,6 @@ class ButtonMenager {
             addPersonButton.style.backgroundColor = "antiquewhite"
         }
 
-        if(this.editPerson) {
-            editPersonButton.style.backgroundColor = "#ff9200"
-        }
-        else {
-            editPersonButton.style.backgroundColor = "antiquewhite"
-        }
-
         if(this.clearConnection) {
             clearConnectionButton.style.backgroundColor = "#ff9200"
         }
@@ -285,12 +268,11 @@ class ButtonMenager {
     DisableAll() {
         this.deletePersonVal = false
         this.addingPersonVal = false
-        this.editPersonVal = false
         this.clearConnectionVal = false
     }
 
     ButtonsDisabled() {
-        if(!this.deletePerson && !this.addingPerson && !this.editPerson && !this.clearConnection) {
+        if(!this.deletePerson && !this.addingPerson && !this.clearConnection) {
             return true;
         }
         else {
@@ -573,9 +555,6 @@ function MouseDown(event) {
         if(buttonMenager.clearConnection) {
             ClearConnection(event)
         }
-        if(buttonMenager.editPerson) {
-            EditPerson(event)
-        }
         if(buttonMenager.deletePerson) {
             DeletePerson(event)
         }
@@ -636,10 +615,6 @@ deletePersonButton.addEventListener("click", () => {
 
 addPersonButton.addEventListener("click", () => {
     buttonMenager.addingPerson = !buttonMenager.addingPerson
-})
-
-editPersonButton.addEventListener("click", () => {
-    buttonMenager.editPerson = !buttonMenager.editPerson
 })
 
 clearConnectionButton.addEventListener("click", () => {
@@ -759,18 +734,6 @@ function ClearConnectionOfElement(element) {
     UpdateCanvas()
 }
 
-function EditPerson(event) {
-    var mouse = viewport.GetMousePosition(event)
-
-    if(IsMouseOnRectangle(event)) {
-        drawableElements.forEach(element => {
-            if(RectanglePointCollision(element, mouse.x, mouse.y)) {
-                
-            }
-        })
-    }
-}
-
 //////////////////////////////////
 //          COLLISION           //
 //////////////////////////////////
@@ -881,18 +844,6 @@ var viewport = new Viewport()
 var dragger = new Dragger()
 var connector = new Connector
 var buttonMenager = new ButtonMenager
-
-window.onload = function() {
-    dragElement(document.getElementById("addFactDiv"));
-    dragElement(document.getElementById("editProfileDiv")); 
-
-    lightbox.addEventListener('click', e=>{
-        if(e.target !== e.currentTarget) return
-            lightbox.classList.remove('active');
-    })
-
-    loadUser();
-}
 
 window.addEventListener("load", () => {
     CheckIfLogged()
