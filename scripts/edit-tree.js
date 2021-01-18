@@ -114,8 +114,8 @@ function LoadPersonToPanel(personId) {
                 newLi += `
                         <li>
                             ${partner.name} ${partner.surname}<br>
-                            <input id="mariage ${mariage.id}" class="mariage" type="date" value="${mariage.mariage_date}"><br>
-                            <input id="divorce ${mariage.id}" class="mariage" type="date" value="${mariage.divorce_date}"><br>
+                            <input id="mariage ${mariage.id}" class="mariage" type="date" value="${mariage.mariage_date || ""}"><br>
+                            <input id="divorce ${mariage.id}" class="mariage" type="date" value="${mariage.divorce_date || ""}"><br>
                         </li>
                 `
                 
@@ -129,7 +129,7 @@ function LoadPersonToPanel(personId) {
                 <li id="event${event.id}">
                     <div class="event-container">
                         <input type="text" id="eventTitle ${event.id}" class="event" placeholder="Title" value="${event.title}"><br>
-                        <input type="date" id="eventDate ${event.id}" class="event" placeholder="Date" value="${event.date}"><br>
+                        <input type="date" id="eventDate ${event.id}" class="event" placeholder="Date" value="${event.date || ""}"><br>
                         <textarea id="eventDescription ${event.id}" class="event" rows="4">${event.description}</textarea>
                         <img src="../images/delete-icon-2.png" onclick="DeleteEvent(${event.id})">
                     </div>
