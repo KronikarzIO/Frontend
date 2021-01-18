@@ -687,10 +687,14 @@ function DeletePerson(event) {
             return RectanglePointCollision(element, mouse.x, mouse.y)
         })
 
-        ClearConnectionOfElement(drawableElements[Idx])
-        Api.deletePersonById(drawableElements[Idx].id)
-        drawableElements.splice(Idx, 1)
-        UpdateCanvas()
+        var answer = window.confirm("Delete person and all its data?")
+
+        if(answer) {
+            ClearConnectionOfElement(drawableElements[Idx])
+            Api.deletePersonById(drawableElements[Idx].id)
+            drawableElements.splice(Idx, 1)
+            UpdateCanvas()
+        }
     }
 }
 
