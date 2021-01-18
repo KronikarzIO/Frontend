@@ -1003,6 +1003,14 @@ function LoadPersonToPanel(personId) {
     })
 }
 
+function CheckIfLogged() {
+    Api.getIsAuthenticated().then( e => {
+        if(e.user = "") {
+            document.location.href="index.html"
+        }
+    })
+}
+
 /**************************************************************************************************************/
 
 ///////////////////////////////////////
@@ -1029,6 +1037,8 @@ window.onload = function() {
 }
 
 window.addEventListener("load", () => {
+    CheckIfLogged()
+
     canvas.width = canvas.clientWidth
     canvas.height = canvas.clientHeight
 
