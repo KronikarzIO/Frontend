@@ -33,49 +33,50 @@
         </div>
 
         <div id="other-data">
-          <label for="gender">Gender: </label>
-          <select id="gender">
-            <option value="M">Male</option>
+          <label for="gender" class="form-wrapper">Gender: </label>
+          <select id="gender" class="form-control">
+            <option value="M" >Male</option>
             <option value="F">Female</option>
             <option value="O">Other</option>
           </select>
-          <br /><br />
-
-          <label for="nationality">Nationality: </label>
-          <input type="text" id="nationality" name="nationality" placeholder="Nationality" />
           <br />
 
-          <label for="birth-place">Birth place: </label>
-          <input type="text" id="birthPlace" name="birth-place" placeholder="Birth place" />
+
+          <label for="nationality"  class="form-wrapper">Nationality: </label>
+          <input type="text" id="nationality" name="nationality" placeholder="Nationality"  class="form-control"/>
           <br />
 
-          <label for="birth-date">Birth date: </label>
-          <input type="date" id="birthDate" name="birth-date" placeholder="Birth date" />
-          <br /><br />
-
-          <label for="death-date">Death date: </label>
-          <input type="date" id="deathDate" name="death-date" placeholder="Death-date" />
+          <label for="birth-place" class="form-wrapper">Birth place: </label>
+          <input type="text" id="birthPlace" name="birth-place" placeholder="Birth place"  class="form-control"/>
           <br />
 
-          <label for="death-cause">Death cause: </label>
-          <input type="text" id="deathCause" name="death-cause" placeholder="Death-cause" />
+          <label for="birth-date" class="form-wrapper">Birth date: </label>
+          <input type="date" id="birthDate" name="birth-date" placeholder="Birth date" class="form-control" />
+          <br />
+
+          <label for="death-date" class="form-wrapper">Death date: </label>
+          <input type="date" id="deathDate" name="death-date" placeholder="Death-date" class="form-control" />
+          <br />
+
+          <label for="death-cause" class="form-wrapper">Death cause: </label>
+          <input type="text" id="deathCause" name="death-cause" placeholder="Death-cause" class="form-control" />
         </div>
 
-        <div id="mariages">
-          <span style="font-size: 1.5em">Mariages</span>
-          <ul id="mariagesList"></ul>
+        <div id="mariages" >
+          <span style="font-size: 1.3em">Mariages</span>
+          <ul id="mariagesList"></ul> 
         </div>
 
         <div id="events">
-          <span style="font-size: 1.5em">Events</span>
+          <span style="font-size: 1.3em">Events</span>
           <br />
           <img src="../images/add-icon-2.png" onclick="AddEvent()" />
           <ul id="eventsList">
-            <li></li>
+            <li></li>   
           </ul>
         </div>
 
-        <span style="font-size: 1.5em">Files</span>
+        <span style="font-size: 1.3em">Files</span>
         <div id="files"></div>
         <button id="saveForm" type="button">Zapisz</button>
       </form>
