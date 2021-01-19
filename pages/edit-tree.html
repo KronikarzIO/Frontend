@@ -1,103 +1,102 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Create Your Tree!</title>
+    <link href="../styles/edit-tree.css" rel="stylesheet" />
+  </head>
 
-<head>
-  <meta charset="utf-8">
-  <title>Create Your Tree!</title>
-  <link href="../styles/edit-tree.css" rel="stylesheet">
-</head>
+  <body>
+    <div id="banner">
+      <a href="browse-trees.html">
+        <img src="../images/tree.png" id="tree-icon" />
+      </a>
+      <span id="fam-tree-text">Fam Forest </span>
+    </div>
 
-<body>
+    <div id="leftPanel">
+      <form>
+        <div id="avatar">
+          <label for="avatar-input">
+            <img id="avatar-img" src="../images/default-avatar.png" data-id="0" />
+          </label>
+          <img id="del-avatar-btn" src="/images/delete-icon-2.png" onclick="deleteAvatar(this)">       
+          <input id="avatar-input" type="file" accept=".png,.jpg,.jpeg,.bmp" onchange="addProfilePic(this.files[0])">
+        </div>
 
-	<div id="banner">
-		<a href="browse-trees.html">
-			<img src="../images/tree.png" id="tree-icon" >
-		</a>
-			<span id="fam-tree-text">Fam Forest </span>
-	</div>
+        <div id="personal-data">
+          <input type="text" id="name" name="name" placeholder="name" />
+          <input type="text" id="surname" name="surname" placeholder="surname" />
+        </div>
 
-	<div id="leftPanel">
-		<form>
-			<div id="avatar">
-				<img src="../images/default-avatar.png">
-			</div>
+        <div id="other-data">
+          <label for="gender">Gender: </label>
+          <select id="gender">
+            <option value="M">Male</option>
+            <option value="F">Female</option>
+            <option value="O">Other</option>
+          </select>
+          <br /><br />
 
-			<div id="personal-data">
-				<input type="text" id="name" name="name" placeholder="name">
-				<input type="text" id="surname" name="surname" placeholder="surname">
-			</div>
+          <label for="nationality">Nationality: </label>
+          <input type="text" id="nationality" name="nationality" placeholder="Nationality" />
+          <br />
 
-			<div id="other-data">
-				<label for="gender">Gender: </label>
-				<select id="gender">
-					<option value="M">Male</option>
-					<option value="F">Female</option>
-					<option value="O">Other</option>
-				</select>
-				<br><br>
+          <label for="birth-place">Birth place: </label>
+          <input type="text" id="birthPlace" name="birth-place" placeholder="Birth place" />
+          <br />
 
-				<label for="nationality">Nationality: </label>
-				<input type="text" id="nationality" name="nationality" placeholder="Nationality">
-				<br>
+          <label for="birth-date">Birth date: </label>
+          <input type="date" id="birthDate" name="birth-date" placeholder="Birth date" />
+          <br /><br />
 
-				<label for="birth-place">Birth place: </label>
-				<input type="text" id="birthPlace" name="birth-place" placeholder="Birth place">
-				<br>
+          <label for="death-date">Death date: </label>
+          <input type="date" id="deathDate" name="death-date" placeholder="Death-date" />
+          <br />
 
-				<label for="birth-date">Birth date: </label>
-				<input type="date" id="birthDate" name="birth-date" placeholder="Birth date">
-				<br><br>
+          <label for="death-cause">Death cause: </label>
+          <input type="text" id="deathCause" name="death-cause" placeholder="Death-cause" />
+        </div>
 
-				<label for="death-date">Death date: </label>
-				<input type="date" id="deathDate" name="death-date" placeholder="Death-date">
-				<br>
+        <div id="mariages">
+          <span style="font-size: 1.5em">Mariages</span>
+          <ul id="mariagesList"></ul>
+        </div>
 
-				<label for="death-cause">Death cause: </label>
-				<input type="text" id="deathCause" name="death-cause" placeholder="Death-cause">
-			</div>
+        <div id="events">
+          <span style="font-size: 1.5em">Events</span>
+          <br />
+          <img src="../images/add-icon-2.png" onclick="AddEvent()" />
+          <ul id="eventsList">
+            <li></li>
+          </ul>
+        </div>
 
-			<div id="mariages">
-				<span style="font-size: 1.5em;">Mariages</span>
-				<ul id="mariagesList">
-					
-				</ul>
-			</div>
+        <span style="font-size: 1.5em">Files</span>
+        <div id="files"></div>
+        <button id="saveForm" type="button">Zapisz</button>
+      </form>
+    </div>
 
-			<div id="events">
-				<span style="font-size: 1.5em;">Events</span>
-				<br>
-				<img src="../images/add-icon-2.png" onclick="AddEvent()">
-				<ul id="eventsList">
-					<li>
-						
-					</li>
-				</ul>
-			</div>
+    <div id="right-panel">
+      <canvas id="canvas"></canvas>
 
-			<button Id="saveForm" type="button">Zapisz</button>
-		</form>
-	</div>
+      <ul id="menu" style="left: -100%; top: -100%">
+        <li class="menu-item" id="father" onclick="AddNewConnection('father')">Father</li>
+        <li class="menu-item" id="mother" onclick="AddNewConnection('mother')">Mother</li>
+        <li class="menu-item" id="partner" onclick="AddNewConnection('partner')">Partner</li>
+      </ul>
 
-	<div id="right-panel">
-		<canvas id="canvas"></canvas>
+      <div class="buttons-panel">
+        <img id="deletePersonButton" src="../images/delete-icon-2.png" />
+        <img id="addPersonButton" src="../images/add-person-icon.png" />
+        <img id="clearConnectionButton" src="../images/clear-icon.png" />
+        <img id="snapToGridButton" src="../images/magnet-icon.png" />
+      </div>
+    </div>
 
-		<ul id="menu" style="left: -100%; top: -100%;">
-			<li class="menu-item" id="father" onclick="AddNewConnection('father')">Father</li>
-			<li class="menu-item" id="mother" onclick="AddNewConnection('mother')">Mother</li>
-			<li class="menu-item" id="partner" onclick="AddNewConnection('partner')">Partner</li>
-		</ul>
-
-		<div class="buttons-panel">
-			<img id="deletePersonButton" src="../images/delete-icon-2.png">
-			<img id="addPersonButton" src="../images/add-person-icon.png">
-			<img id="clearConnectionButton"src="../images/clear-icon.png">
-			<img id="snapToGridButton" src="../images/magnet-icon.png">
-		</div>
-
-	</div>
-
-	<script src="../scripts/api.js"></script>
-	<script src="../scripts/canvas-script.js"></script>
-	<script src="../scripts/edit-tree.js"></script>
-</body>
+    <script src="../scripts/api.js"></script>
+    <script src="../scripts/canvas-script.js"></script>
+    <script src="../scripts/edit-tree.js"></script>
+  </body>
 </html>
