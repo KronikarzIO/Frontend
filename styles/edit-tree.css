@@ -1,188 +1,270 @@
 html {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
+  margin: 0;
+  width: 100%;
+  height: 100%;
 }
 
 canvas {
-	width: 100%;
-	height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
-#banner{
-	height: 70px;
-	background-color:#55973E;
-	width:100%;
+#banner {
+  height: 70px;
+  background-color: #55973e;
+  width: 100%;
 }
 
-#fam-tree-text{
-	float: right;
-	color: #E3EB86;
-	padding: 20px;
-	margin-right: 15px;
-	font-size: 1.2em;
+#fam-tree-text {
+  float: right;
+  color: #e3eb86;
+  padding: 20px;
+  margin-right: 15px;
+  font-size: 1.2em;
 }
 
-#tree-icon{
-	width: 70px;
-	margin-left: 15px;
-	float: left;
+#tree-icon {
+  width: 70px;
+  margin-left: 15px;
+  float: left;
 }
 
-#right-panel{
-	height: calc(100% - 70px);
-	background-color: #FFF;
+#right-panel {
+  height: calc(100% - 70px);
+  background-color: #fff;
 }
 
-#leftPanel{
-	height: calc(100% - 70px);
-	width: 450px;
+#leftPanel {
+  height: calc(100% - 70px);
+  width: 450px;
 
-	box-sizing: border-box;
-	padding: 20px;
+  box-sizing: border-box;
+  padding: 20px;
 
-	position: fixed;
-	left: 0px;
-	display: none;
+  position: fixed;
+  left: 0px;
+  display: none;
 
-	background-color: whitesmoke;
-	overflow: auto
+  background-color: whitesmoke;
+  overflow: auto;
 }
 
 #avatar {
-	width: 200px;
-	height: 200px;
-	
-	margin: 0 auto;
+  width: 200px;
+  height: 200px;
+
+  margin: 0 auto;
 }
 
 #avatar img {
-	width: 100%;
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+#avatar img:hover {
+  filter: contrast(40%);
+}
+
+#avatar > input {
+  display: none;
+}
+
+#avatar > img {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  left: 70%;
 }
 
 #personal-data {
-	padding: 20px 0;
-	margin: 0 auto;
+  padding: 20px 0;
+  margin: 0 auto;
 }
 
-#other-data, #mariages, #events {
-	padding-top: 30px;
+#other-data,
+#mariages,
+#events {
+  padding-top: 30px;
 }
 
 #personal-data input {
-	outline: none;
-	border: none;
-	font-size: 2em;
-	background-color: inherit;
-	text-align: center;
-	width: 100%;
+  outline: none;
+  border: none;
+  font-size: 2em;
+  background-color: inherit;
+  text-align: center;
+  width: 100%;
 }
 
 #other-data label {
-	font-size: 1.2em;
+  font-size: 1.2em;
 }
 
 #other-data input {
-	border: none;
-	outline: none;
-	font-size: 1.2em;
-	background-color: inherit;
-	width: auto;
+  border: none;
+  outline: none;
+  font-size: 1.2em;
+  background-color: inherit;
+  width: auto;
 }
 
 #other-data select {
-	border: none;
-	outline: none;
-	font-size: 1.2em;
-	background-color: inherit;
-	width: auto;
+  border: none;
+  outline: none;
+  font-size: 1.2em;
+  background-color: inherit;
+  width: auto;
 }
 
 textarea {
-	width: 100%;
+  width: 100%;
 }
 
 ul {
-	margin: 0;
-	padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
 li {
-	padding: 5px;
+  padding: 5px;
 }
 
-.event-container img, #events img {
-	width: 30px;
+.event-container img,
+#events img {
+  width: 30px;
 }
 
 #menu {
-    position: absolute;
+  position: absolute;
 
-    width: fit-content;
-    min-width: 150px;
+  width: fit-content;
+  min-width: 150px;
 
-    margin: 0;
-    padding: 5px;
+  margin: 0;
+  padding: 5px;
 
-    border: gainsboro 1px solid;
-    border-radius: 10px;
-    background-color: ghostwhite;
+  border: gainsboro 1px solid;
+  border-radius: 10px;
+  background-color: ghostwhite;
 }
 
 .menu-item {
-    padding: 2px 10px;
-    color: grey
+  padding: 2px 10px;
+  color: grey;
 }
 
 .menu-item:hover {
-    color: black;
-    font-weight: bold;
+  color: black;
+  font-weight: bold;
 }
 
 .menu-item:active {
-    background-color: darkgray;
+  background-color: darkgray;
 }
 
 ul {
-    list-style-type: none;
+  list-style-type: none;
 }
 
 ::-webkit-scrollbar {
-    display: none;
-  }
+  display: none;
+}
 
 .buttons-panel {
-	width: 70px;
-	height: fit-content;
+  width: 70px;
+  height: fit-content;
 
-	margin-right: 10px;
+  margin-right: 10px;
 
-	display: flex;
-	flex-direction: column;
+  display: flex;
+  flex-direction: column;
 
-	position: fixed;
-	right: 0px;
-	bottom: 0px;
+  position: fixed;
+  right: 0px;
+  bottom: 0px;
 }
 
 .buttons-panel img {
-	width: 100%;
-	padding: 10px;
-	box-sizing: border-box;
-	background-color: antiquewhite;
-	border-radius: 5px;
-	margin-bottom: 10px;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  background-color: antiquewhite;
+  border-radius: 5px;
+  margin-bottom: 10px;
 }
 
 .buttons-panel img:hover {
-	background-color: #c7bbab;
+  background-color: #c7bbab;
 }
 
 .buttons-panel img:active {
-	background-color: #ff9200;
+  background-color: #ff9200;
+}
+
+#files {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.add-file-container {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.add-file-container > input {
+  display: none;
+}
+
+#add-file {
+  width: 90px;
+  cursor: pointer;
+}
+#add-file:hover {
+  filter: contrast(10%);
+}
+
+.file {
+  display: flex;
+  flex-flow: column nowrap;
+  padding: 10px;
+  width: 100px;
+}
+
+.img-file {
+  width: 100%;
+  position: relative;
+}
+
+.img-file > a > img {
+  width: 100%;
+}
+.img-file > a > img:hover {
+  filter: contrast(10%);
+}
+.img-file > img {
+  position: absolute;
+  width: 20px;
+  float: left;
+  left: 95%;
+  top: 5%;
+  cursor: pointer;
+}
+.img-file > img:hover {
+  filter: contrast(10%);
+}
+.file input {
+  max-width: 100px;
+  outline: auto;
+  border: none;
+  font-size: 0.8em;
+  background-color: inherit;
+  width: 100%;
 }

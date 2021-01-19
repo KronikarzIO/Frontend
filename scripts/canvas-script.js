@@ -139,7 +139,8 @@ class PersonBlock extends RectangleRounded {
 
         var img = new Image
         img.src = this.imagePath
-        this.context.drawImage(img, x+10, y+10)
+       
+        this.context.drawImage(img, x+10, y+10,130,130)
 
         this.context.fillStyle = "black"
         this.context.font = "30px Arial"
