@@ -33,8 +33,8 @@ const Api = (() => {
     return response;
   }
 
-  const getBasic = (endpoint, id = null, searchParams = null) => {
-    let url = new URL(endpoint + "/" + (id ? id + "/" : ""), baseURL);
+  const getBasic = (endpoint, id = null, searchParams = null, nestedEnpoint = null) => {
+    let url = new URL(endpoint + "/" + (id ? id + "/" : "") + (nestedEnpoint ? nestedEnpoint + "/" : ""), baseURL);
     if (searchParams) {
       url.searchParams = searchParams;
     }
@@ -134,6 +134,11 @@ const Api = (() => {
    * @throws { status_code: Number, error: JSON }
    */
   const getFamilyTreeById = (familyTreeId) => getBasic("family-trees", familyTreeId);
+  /**
+   * @param  {Number} familyTreeId
+   * @throws { status_code: Number, error: JSON }
+   */
+  const getFamilyTreeAllDataById = (familyTreeId) => getBasic("family-trees", familyTreeId, null, "all_data");
   /**
    * @param  {object} data
    * @throws { status_code: Number, error: JSON }
@@ -303,6 +308,7 @@ const Api = (() => {
     deleteEventById,
     getFamilyTrees,
     getFamilyTreeById,
+    getFamilyTreeAllDataById,
     postFamilyTree,
     putFamilyTreeById,
     patchFamilyTreeById,
