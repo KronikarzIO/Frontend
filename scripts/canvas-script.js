@@ -877,7 +877,6 @@ async function CheckIfLogged() {
     .then(() => {
       let params = new URLSearchParams(window.location.search);
       familyTreeId = params.get("family_tree_id");
-      console.log(familyTreeId)
       Api.getFamilyTreeById(parseInt(familyTreeId)).then((data) => {
         treeNameInput.value = data.name;
       });
