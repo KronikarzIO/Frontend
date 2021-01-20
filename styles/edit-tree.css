@@ -383,4 +383,37 @@ form{
 }
 
 
+#mariagesList{
+  padding-top:5px;
+}
+
+#mariagesList input, #eventsList input, #eventsList textarea{
+  color: #333;
+  font-size: 1.3em;
+  border: 1px solid #ccc;
+  width: 70%;
+  padding: 0 20px;
+  margin: 7px 0px;
+  border-radius: 20px;
+  background: none; 
+}
+#mariagesList input, #eventsList input{
+  height: 40px;
+}
+#eventsList textarea{
+  padding:10px;
+}
+
+#eventsList li{
+  margin-bottom:30px;
+}
+
+#mariagesList input:hover, #eventsList input:hover, #eventsList textarea:hover   {
+  text-decoration: none; 
+}
+#mariagesList input:focus, #eventsList input:focus, #eventsList textarea:focus  {
+  outline: none; 
+  border: 1px solid #41812a; 
+}
+
 
