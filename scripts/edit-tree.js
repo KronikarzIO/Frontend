@@ -463,8 +463,9 @@ exportToHTML.addEventListener("click", () => {
 
 exportToJSON.addEventListener("click", () => {
     Api.getFamilyTreeAllDataById(familyTreeId).then( data => {
-      var tab = window.open('about:blank', '_blank')
-      tab.document.write(JSON.stringify(data))
+      var tab = window.open()
+      tab.document.write(JSON.stringify(data,null,2))
+      tab.document.close()
     })
 })
 
