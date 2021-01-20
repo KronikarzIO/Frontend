@@ -4,6 +4,8 @@
     <meta charset="utf-8" />
     <title>Create Your Tree!</title>
     <link href="../styles/edit-tree.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/pdfkit@0.11.0/js/pdfkit.standalone.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/svg-to-pdfkit@0.1.8/source.min.js"></script>
   </head>
 
   <body>
@@ -94,10 +96,16 @@
         <img id="clearConnectionButton" src="../images/clear-icon.png" />
         <img id="snapToGridButton" src="../images/magnet-icon.png" />
       </div>
+
+      <div class="export-panel">
+        <img id="exportToPDF" src="../images/pdf-icon.png">
+        <img id="exportToHTML" src="../images/html-icon.png">
+        <img id="exportToJSON" src="../images/json-icon.png">
+      </div>
     </div>
 
     <script src="../scripts/api.js"></script>
-    <script src="../scripts/canvas-script.js"></script>
-    <script src="../scripts/edit-tree.js"></script>
+	  <script src="../scripts/canvas-script.js"></script>
+	  <script src="../scripts/edit-tree.js"></script>
   </body>
 </html>
