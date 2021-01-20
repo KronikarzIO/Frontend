@@ -99,7 +99,7 @@ body {
 
 }
 
-.icon>img:last-child {
+#delete-tree-icon {
     position: absolute;
     right: 0;
     top: 0;
@@ -110,6 +110,10 @@ body {
 
 
 
-.icon>img:last-child:hover{
+#delete-tree-icon:hover{
     filter: contrast(10%);
+}
+
+#sign-out {
+    cursor: pointer;
 }

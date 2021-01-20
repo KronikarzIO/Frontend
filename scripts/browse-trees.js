@@ -11,9 +11,9 @@ window.onload = () => {
         for (tree of trees) {
           treesSection.innerHTML += `
           <div class="icon" data-id=${tree.id}>
-            <img src="../images/browse-tree.svg" onclick="goToFamilyTree(this)">
+            <img  src="../images/browse-tree.svg" onclick="goToFamilyTree(this)">
             ${tree.name}
-            <img src="/images/delete-icon-2.png" onclick="deleteFamilyTree(this)">       
+            <img id="delete-tree-icon" src="/images/delete-icon-2.png" onclick="deleteFamilyTree(this)">       
           </div>
           `;
         }
