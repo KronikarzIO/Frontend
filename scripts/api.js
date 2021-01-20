@@ -21,9 +21,13 @@ const Api = (() => {
     if (!response.ok) {
       let statusCode = response.status;
       return response.json().then((error) => {
-        window.location.href="/pages/index.html"
+        if (
+          statusCode === 403 ||
+          (statusCode === 401 && error.detail != "User is not authenticated:")
+        ) {
+          window.location.href = "/pages/index.html";
+        }
         throw { status_code: statusCode, error: error };
-        
       });
     }
     return response;

@@ -1,5 +1,10 @@
 const avatar = document.querySelector("#avatar img");
 const filesSection = document.getElementById("files");
+const treeNameInput = document.getElementById("tree-name");
+
+treeNameInput.addEventListener("focusout", (e) => {
+  Api.patchFamilyTreeById(familyTreeId, { name: e.target.value });
+});
 
 saveForm.addEventListener("click", () => {
   if (!document.forms[0].reportValidity()) {
