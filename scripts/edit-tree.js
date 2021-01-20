@@ -462,9 +462,10 @@ exportToHTML.addEventListener("click", () => {
 })
 
 exportToJSON.addEventListener("click", () => {
-    Api.getFamilyTreeById(familyTreeId).then( data => {
-      var tab = window.open('about:blank', '_blank')
-      tab.document.write(JSON.stringify(data))
+    Api.getFamilyTreeAllDataById(familyTreeId).then( data => {
+      var tab = window.open()
+      tab.document.write(JSON.stringify(data,null,2))
+      tab.document.close()
     })
 })
 
