@@ -85,3 +85,31 @@ body {
 .btn:focus {
     background-color: #BFC66F;
 }
+
+.icon>img:first-child {
+    cursor: pointer;
+}
+
+.icon{
+    position: relative;
+}
+
+.icon>img:first-child:hover {
+    filter: contrast(70%);
+
+}
+
+.icon>img:last-child {
+    position: absolute;
+    right: 0;
+    top: 0;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+}
+
+
+
+.icon>img:last-child:hover{
+    filter: contrast(10%);
+}

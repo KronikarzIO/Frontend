@@ -7,8 +7,8 @@
 var drawableElements = []
 var toConnect = {dragedElement: 0, staticElement: 0}
 var draggingElement = false
-var familyTreeId = 1
 var selectedPersonId
+var familyTreeId = -1
 
 /**************************************************************************************************************/
 
@@ -835,7 +835,7 @@ function Round(x, factor) {
 }
 
 function GetPersons() {
-    Api.getFamilyTreeById(familyTreeId).then( treeData => {
+    Api.getFamilyTreeById(familyTreeId).then( (treeData) => {
         var persons = treeData.persons
 
         persons.forEach(e => {
@@ -872,12 +872,19 @@ function ElementMoved() {
     return false
 }
 
-function CheckIfLogged() {
-    Api.getIsAuthenticated().then( e => {
-        if(e.user = "") {
-            document.location.href="index.html"
-        }
+async function CheckIfLogged() {
+   return Api.getIsAuthenticated()
+    .then(() => {
+      let params = new URLSearchParams(window.location.search);
+      familyTreeId = params.get("family_tree_id");
+      console.log(familyTreeId)
+      Api.getFamilyTreeById(parseInt(familyTreeId)).then((data) => {
+        treeNameInput.value = data.name;
+      });
     })
+    .catch(() => {
+      location.replace("/pages/index.html");
+    });
 }
 
 /**************************************************************************************************************/
@@ -895,19 +902,19 @@ var buttonMenager = new ButtonMenager
 var border = new Border(-10000, -10000, 20000, 20000)
 
 window.addEventListener("load", () => {
-    CheckIfLogged()
-
-    canvas.width = canvas.clientWidth
-    canvas.height = canvas.clientHeight
-
-    canvas.addEventListener('contextmenu', event => event.preventDefault());
-    canvas.addEventListener("mousemove", MouseMove)
-    canvas.addEventListener("mousedown", MouseDown)
-    canvas.addEventListener("mouseup", MouseUp)
-    canvas.addEventListener("wheel", MouseWheel)
-
-    GetPersons()
-    UpdateCanvas()
+    CheckIfLogged().then(()=>{
+        canvas.width = canvas.clientWidth
+        canvas.height = canvas.clientHeight
+    
+        canvas.addEventListener('contextmenu', event => event.preventDefault());
+        canvas.addEventListener("mousemove", MouseMove)
+        canvas.addEventListener("mousedown", MouseDown)
+        canvas.addEventListener("mouseup", MouseUp)
+        canvas.addEventListener("wheel", MouseWheel)
+    
+        GetPersons()
+        UpdateCanvas()
+    })
 })
 
 window.addEventListener("resize", () => {
