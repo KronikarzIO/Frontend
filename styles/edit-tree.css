@@ -213,6 +213,30 @@ ul {
   margin-bottom: 10px;
 }
 
+.export-panel {
+	width: 70px;
+	height: fit-content;
+
+	margin-right: 10px;
+
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+
+	position: absolute;
+	right: 0px;
+	top: 70px;
+}
+
+.export-panel img {
+	width: 100%;
+	padding: 10px;
+	box-sizing: border-box;
+	background-color: antiquewhite;
+	border-radius: 5px;
+	margin-top: 10px;
+}
+
 .buttons-panel img:hover {
   background-color: #c7bbab;
 }

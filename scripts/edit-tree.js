@@ -322,3 +322,275 @@ function isImage(filename) {
   var imgExtensions = /(\.png|\.jpg|\.gif|\.jpeg|\.bmp)$/i;
   return imgExtensions.test(filename);
 }
+
+var up = 0
+var bottom = 0
+var left = 0
+var right = 0
+
+exportToPDF.addEventListener("click", () => {
+    up = drawableElements[0].y
+    bottom = drawableElements[0].y
+    left = drawableElements[0].x
+    right = drawableElements[0].x
+
+    drawableElements.forEach(e => {
+        if(e.x > right) {
+            right = e.x
+        }
+        if(e.x < left) {
+            left = e.x
+        }
+        if(e.y > bottom) {
+            bottom = e.y
+        }
+        if(e.y < up) {
+            up = e.y
+        }
+    })
+
+    var svg = `
+    <svg height="${bottom - up + drawableElements[0].height}" width="${right - left + drawableElements[0].width}">
+    <style>
+        .text { font-size: 30px; font-family: Arial;}
+        img {width: 130px; height: 130px; object-fit: contain; position: absolute;}
+        .linePartner {stroke: black; stroke-width: 5; fill: none}
+        .lineChild {stroke: black; stroke-width: 1; fill: none}
+    </style>
+    `
+
+    SVGDrawConnections()
+    svg += paths
+
+    drawableElements.forEach(e => {
+        svg += `
+        <rect x="${e.x - left}" y="${e.y - up}" rx="15" ry="15" width="${e.width}" height="${e.height}"
+        style="fill:antiquewhite" />
+        <text x="${e.x - left + 150}" y="${e.y - up + 65}" class="text" >${e.firstName}</text>
+        <text x="${e.x - left + 150}" y="${e.y - up + 105}" class="text" >${e.lastName}</text>
+        `
+    })
+    svg += `
+    </svg>
+    `
+
+    var doc = new PDFDocument({size: [(right - left + drawableElements[0].width)*0.75,(bottom - up + drawableElements[0].height)*0.75]});
+    const chunks = [];
+    const stream = doc.pipe({
+        write: (chunk) => chunks.push(chunk),
+        end: () => {
+            const pdfBlob = new Blob(chunks, {type: 'application/pdf'});
+            var blobUrl = URL.createObjectURL(pdfBlob);
+            window.open(blobUrl);
+        },
+        on: (event, action) => {},
+        once: (...args) => {},
+        emit: (...args) => {},
+    });
+
+    SVGtoPDF(doc, svg, 0, 0);
+    drawableElements.forEach(e => {
+        doc.image(getBase64Image(e.imagePath), (e.x - left + 10)*0.75, (e.y - up + 10)*0.75, {fit: [100, 100]})
+    })
+
+    doc.end();
+})
+
+exportToHTML.addEventListener("click", () => {
+    up = drawableElements[0].y
+    bottom = drawableElements[0].y
+    left = drawableElements[0].x
+    right = drawableElements[0].x
+
+    drawableElements.forEach(e => {
+        if(e.x > right) {
+            right = e.x
+        }
+        if(e.x < left) {
+            left = e.x
+        }
+        if(e.y > bottom) {
+            bottom = e.y
+        }
+        if(e.y < up) {
+            up = e.y
+        }
+    })
+
+    var web = `
+    <body style="margin: 0;">
+    <style>
+        .text { font-size: 30px; font-family: Arial;}
+        img {width: 130px; height: 130px; object-fit: contain; position: absolute;}
+        .linePartner {stroke: black; stroke-width: 5; fill: none}
+        .lineChild {stroke: black; stroke-width: 1; fill: none}
+    </style>
+    `
+
+    drawableElements.forEach(e => {
+        web += `
+        <img style="left: ${e.x - left + 10}px; top: ${e.y - up + 10}px" src="${e.imagePath}">
+        `
+    })
+
+    web += `
+    <svg height="${bottom - up + drawableElements[0].height}" width="${right-left + drawableElements[0].width}">
+    `
+
+    SVGDrawConnections()
+    web += paths
+
+    drawableElements.forEach(e => {
+        web += `
+        <rect x="${e.x - left}" y="${e.y - up}" rx="15" ry="15" width="${e.width}" height="${e.height}"
+        style="fill:antiquewhite" />
+        <text x="${e.x - left + 150}" y="${e.y - up + 65}" class="text" >${e.firstName}</text>
+        <text x="${e.x - left + 150}" y="${e.y - up + 105}" class="text" >${e.lastName}</text>
+        `
+    })
+    web += `
+    </svg>
+    `
+
+    web += `
+    </body>
+    `
+
+    localStorage.setItem("web", web)
+
+    document.location.href="export.html"
+})
+
+exportToJSON.addEventListener("click", () => {
+    Api.getFamilyTreeById(familyTreeId).then( data => {
+      var tab = window.open('about:blank', '_blank')
+      tab.document.write(JSON.stringify(data))
+    })
+})
+
+function SVGDrawConnections() {
+    paths=""
+    drawableElements.forEach( e => {
+        var parent1 = drawableElements.find(element => element.id == e.parent1Id)
+        var parent2 = drawableElements.find(element => element.id == e.parent2Id)
+
+        if(parent1 != undefined && parent2 != undefined) {
+            SVGChildConnection(e, parent1, parent2)
+        }
+        else if(parent1 != undefined) {
+            SVGChildConnection(e, parent1)
+        }
+        else if (parent2 != undefined) {
+            SVGChildConnection(e, parent2)
+        }
+
+        e.partnersId.forEach( partnerId => {
+            var p = drawableElements.find( el => el.id == partnerId)
+            SVGParentConnection(e, p)
+        });
+    });
+}
+
+function SVGChildConnection(child, parent1, parent2 = null) {
+    var StartX1 = parent1.x - left + parent1.width/2
+    var StartY1 = parent1.y - up + parent1.height/2
+    var StartX2
+    var StartY2
+    var EndX = child.x - left + child.width/2
+    var EndY = child.y - up + child.height/2
+
+    if(parent2 != null) {
+        if(parent2 != null) {
+            StartX2 = parent2.x - left + parent2.width/2
+            StartY2 = parent2.y - up + parent2.height/2
+        }
+
+        var lineX = StartX2+((StartX1-StartX2)/2)
+        var lineY = StartY1
+
+        paths += `
+        <polyline class="lineChild" points="${lineX}, ${lineY}
+        `
+
+        if(EndY > StartY1) {
+            lineY += (EndY - StartY1) - child.height/2 - 20
+        }
+        else {
+            lineY += (EndY - StartY1) + child.height/2 + 20
+        }
+        paths += ` ${lineX}, ${lineY}`
+
+        lineX += EndX - lineX
+        paths += ` ${lineX}, ${lineY}`
+
+        lineY += EndY - lineY
+        paths += ` ${lineX}, ${lineY}" />`
+    }
+    else {
+        var lineX = StartX1
+        var lineY = StartY1
+
+        paths += `
+        <polyline class="lineChild" points="${lineX}, ${lineY}
+        `
+
+        if(EndX > StartX1) {
+            lineX += parent1.width/2+20
+        }
+        else {
+            lineX += -parent1.width/2-20
+        }
+        paths += ` ${lineX}, ${lineY}`
+
+        if(EndY > StartY1) {
+            lineY += (EndY - StartY1) - child.height/2 - 20
+        }
+        else {
+            lineY += (EndY - StartY1) + child.height/2 + 20
+        }
+        paths += ` ${lineX}, ${lineY}`
+
+        lineX += EndX - lineX
+        paths += ` ${lineX}, ${lineY}`
+
+        lineY += EndY - lineY
+        paths += ` ${lineX}, ${lineY}" />`
+    }
+}
+
+function SVGParentConnection(rect1, rect2) {
+    var StartX = rect1.x - left + rect1.width/2
+    var StartY = rect1.y - up + rect1.height/2
+
+    var EndX = rect2.x - left + rect2.width/2
+    var EndY = rect2.y  - up + rect2.height/2
+
+    var lineX = StartX
+    var lineY = StartY
+
+
+    paths += `
+    <polyline class="linePartner" points="${lineX}, ${lineY}
+    `
+
+    lineX += (EndX - lineX)/2
+    paths += ` ${lineX}, ${lineY}`
+
+    lineY += EndY - lineY
+    paths += ` ${lineX}, ${lineY}`
+
+    lineX += EndX - lineX
+    paths += ` ${lineX}, ${lineY}" />`
+}
+
+function getBase64Image(imgPath) {
+    var img = new Image()
+    img.src = imgPath
+    var canvas = document.createElement("canvas")
+    canvas.width = img.width
+    canvas.height = img.height
+    var ctx = canvas.getContext("2d")
+    ctx.drawImage(img, 0, 0)
+    var dataURL = canvas.toDataURL("image/png")
+    return dataURL
+}
