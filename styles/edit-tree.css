@@ -54,6 +54,7 @@ canvas {
 }
 
 #leftPanel {
+
   height: calc(100% - 70px);
   width: 450px;
 
@@ -116,25 +117,6 @@ canvas {
   width: 100%;
 }
 
-#other-data label {
-  font-size: 1.2em;
-}
-
-#other-data input {
-  border: none;
-  outline: none;
-  font-size: 1.2em;
-  background-color: inherit;
-  width: auto;
-}
-
-#other-data select {
-  border: none;
-  outline: none;
-  font-size: 1.2em;
-  background-color: inherit;
-  width: auto;
-}
 
 textarea {
   width: 100%;
@@ -301,8 +283,137 @@ ul {
 .file input {
   max-width: 100px;
   outline: auto;
-  border: none;
   font-size: 0.8em;
   background-color: inherit;
   width: 100%;
 }
+
+
+form{
+  font-family: monaco,Consolas,Lucida Console,monospace;
+}
+
+#saveForm {
+  border: none;
+  width: 152px;
+  height: 40px;
+  margin: auto;
+  margin-top: 29px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: #55973e;
+  font-size: 13px;
+  color: #fff;
+  text-transform: uppercase;
+  font-family: "Muli-SemiBold";
+  border-radius: 20px;
+  overflow: hidden;
+  -webkit-transform: perspective(1px) translateZ(0);
+  transform: perspective(1px) translateZ(0);
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+  position: relative;
+  -webkit-transition-property: color;
+  transition-property: color;
+  -webkit-transition-duration: 0.5s;
+  transition-duration: 0.5s; 
+}
+#saveForm:before 
+{
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #53ac32;
+  -webkit-transform: scaleX(0);
+  transform: scaleX(0);
+  -webkit-transform-origin: 0 50%;
+  transform-origin: 0 50%;
+  -webkit-transition-property: transform;
+  transition-property: transform;
+  -webkit-transition-duration: 0.5s;
+  transition-duration: 0.5s;
+  -webkit-transition-timing-function: ease-out;
+  transition-timing-function: ease-out; 
+}
+#saveForm:hover:before {
+  -webkit-transform: scaleX(1);
+  transform: scaleX(1);
+  -webkit-transition-timing-function: cubic-bezier(0.52, 1.64, 0.37, 0.66);
+  transition-timing-function: cubic-bezier(0.52, 1.64, 0.37, 0.66); 
+}
+
+.form-control:hover {
+  text-decoration: none; 
+}
+.form-control:focus {
+  outline: none; 
+}
+.form-wrapper {
+  font-size: 1.3em;
+}
+.form-wrapper label 
+{
+  margin-top: 9px;
+  width:50%;
+}
+.form-control 
+{
+  color: #333;
+  font-size: 1.3em;
+  border: 1px solid #ccc;
+  width: 50%;
+  height: 40px;
+  padding: 0 20px;
+  margin: 5px 0px;
+  border-radius: 20px;
+  background: none; 
+}
+.form-control:focus {
+  border: 1px solid #41812a; 
+}
+
+.form-control select{
+  font-size:1.3em;
+}
+
+
+#mariagesList{
+  padding-top:5px;
+}
+
+#mariagesList input, #eventsList input, #eventsList textarea{
+  color: #333;
+  font-size: 1.3em;
+  border: 1px solid #ccc;
+  width: 70%;
+  padding: 0 20px;
+  margin: 7px 0px;
+  border-radius: 20px;
+  background: none; 
+}
+#mariagesList input, #eventsList input{
+  height: 40px;
+}
+#eventsList textarea{
+  padding:10px;
+}
+
+#eventsList li{
+  margin-bottom:30px;
+}
+
+#mariagesList input:hover, #eventsList input:hover, #eventsList textarea:hover   {
+  text-decoration: none; 
+}
+#mariagesList input:focus, #eventsList input:focus, #eventsList textarea:focus  {
+  outline: none; 
+  border: 1px solid #41812a; 
+}
+
+
